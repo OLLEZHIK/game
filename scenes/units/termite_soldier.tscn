@@ -32,8 +32,9 @@ unit_name = "Термит-Воин"
 role = 3
 is_enemy = true
 max_health = 85.0
-move_speed = 2.8
-attack_damage = 18.0
+move_speed = 2.6
+attack_damage = 16.0
+attack_cooldown = 1.1
 
 [node name="Visuals" type="Node3D" parent="."]
 

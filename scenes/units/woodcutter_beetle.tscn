@@ -29,9 +29,10 @@ size = Vector3(1.1, 1.0, 1.6)
 script = ExtResource("1_uwood")
 unit_name = "Жук-Лесоруб (Усач)"
 role = 2
-max_health = 110.0
+max_health = 100.0
 move_speed = 3.0
-attack_damage = 15.0
+attack_damage = 16.0
+attack_cooldown = 1.0
 
 [node name="Visuals" type="Node3D" parent="."]
 

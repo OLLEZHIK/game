@@ -31,8 +31,10 @@ radius = 0.65
 script = ExtResource("1_uhead")
 unit_name = "Муравей-Рабочий"
 role = 0
-max_health = 65.0
-move_speed = 3.8
+max_health = 40.0
+move_speed = 4.6
+attack_damage = 5.0
+attack_cooldown = 0.8
 
 [node name="Visuals" type="Node3D" parent="."]
 

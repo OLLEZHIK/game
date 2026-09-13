@@ -4,6 +4,7 @@
 [ext_resource type="Material" uid="uid://m_daisy_center01" path="res://assets/materials/mat_daisy_center.tres" id="2_mcenter"]
 [ext_resource type="Material" uid="uid://m_nectar01" path="res://assets/materials/mat_nectar.tres" id="3_mnectar"]
 [ext_resource type="Material" uid="uid://m_grass01" path="res://assets/materials/mat_grass.tres" id="4_mleaf"]
+[ext_resource type="Script" path="res://scripts/props/flower.gd" id="5_fscript"]
 
 [sub_resource type="SphereMesh" id="SphereMesh_center"]
 material = ExtResource("2_mcenter")
@@ -32,6 +33,7 @@ height = 1.6
 radial_segments = 8
 
 [node name="DaisyFlower" type="Node3D"]
+script = ExtResource("5_fscript")
 
 [node name="Stem" type="MeshInstance3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.7, 0)

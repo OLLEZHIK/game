@@ -7,6 +7,7 @@ const RHINO_BEETLE_SCENE = preload("res://scenes/units/rhino_beetle.tscn")
 const WOODCUTTER_BEETLE_SCENE = preload("res://scenes/units/woodcutter_beetle.tscn")
 const FLYING_BEE_SCENE = preload("res://scenes/units/flying_bee.tscn")
 const TERMITE_SOLDIER_SCENE = preload("res://scenes/units/termite_soldier.tscn")
+const FALLEN_NECTAR_DROP_SCENE = preload("res://scenes/props/fallen_nectar_drop.tscn")
 
 @onready var forest_map: ForestMap = $ForestMap
 @onready var rts_camera: RTSCamera = $RTSCamera
@@ -26,10 +27,20 @@ const TERMITE_SOLDIER_SCENE = preload("res://scenes/units/termite_soldier.tscn")
 @onready var btn_spawn_rhino: Button = %BtnSpawnRhino
 @onready var btn_spawn_enemy: Button = %BtnSpawnEnemy if has_node("%BtnSpawnEnemy") else null
 @onready var label_wave_status: Label = %LabelWaveStatus if has_node("%LabelWaveStatus") else null
-@onready var label_selected_bug: Label = %LabelSelectedBug
+
+# Stats panel elements
+@onready var label_stat_title: Label = %LabelStatTitle if has_node("%LabelStatTitle") else null
+@onready var label_stat_hp: Label = %LabelStatHp if has_node("%LabelStatHp") else null
+@onready var label_stat_speed: Label = %LabelStatSpeed if has_node("%LabelStatSpeed") else null
+@onready var label_stat_damage: Label = %LabelStatDamage if has_node("%LabelStatDamage") else null
+@onready var label_stat_cadence: Label = %LabelStatCadence if has_node("%LabelStatCadence") else null
+@onready var label_stat_desc: Label = %LabelStatDesc if has_node("%LabelStatDesc") else null
+
 @onready var bug_cam_banner: PanelContainer = %BugCamBanner
 @onready var label_notification: Label = %LabelNotification if has_node("%LabelNotification") else null
 @onready var label_active_lane: Label = %LabelActiveLane if has_node("%LabelActiveLane") else null
+
+var fallen_nectar_drops: Array = []
 
 # Economy resources (from docs/03_economy_and_resources.md)
 var nectar: int = 200
@@ -76,16 +87,21 @@ func _ready() -> void:
 	# Bug selection buttons
 	if btn_spawn_worker:
 		btn_spawn_worker.pressed.connect(func(): select_bug_for_deployment(WORKER_ANT_SCENE, 40, "Муравей-Сборщик"))
+		btn_spawn_worker.mouse_entered.connect(func(): display_stats_for_bug_name("Муравей-Сборщик"))
 	if btn_spawn_bee:
 		btn_spawn_bee.pressed.connect(func(): select_bug_for_deployment(FLYING_BEE_SCENE, 50, "Летающая Пчелка"))
+		btn_spawn_bee.mouse_entered.connect(func(): display_stats_for_bug_name("Летающая Пчелка"))
 	if btn_spawn_woodcutter:
 		btn_spawn_woodcutter.pressed.connect(func(): select_bug_for_deployment(WOODCUTTER_BEETLE_SCENE, 60, "Жук-Лесоруб"))
+		btn_spawn_woodcutter.mouse_entered.connect(func(): display_stats_for_bug_name("Жук-Лесоруб"))
 	if btn_spawn_rhino:
 		btn_spawn_rhino.pressed.connect(func(): select_bug_for_deployment(RHINO_BEETLE_SCENE, 85, "Танк-Носорог"))
+		btn_spawn_rhino.mouse_entered.connect(func(): display_stats_for_bug_name("Танк-Носорог"))
 
 	# Enemy manual trigger button
 	if btn_spawn_enemy:
 		btn_spawn_enemy.pressed.connect(func(): spawn_enemy_wave(randi() % 3))
+		btn_spawn_enemy.mouse_entered.connect(func(): display_stats_for_bug_name("Термит-Воин"))
 
 	# Connect 3D world tunnel and lane clicking
 	if forest_map:
@@ -142,6 +158,7 @@ func _unhandled_input(event: InputEvent) -> void:
 
 ## 1. Step 1: Player clicks on bug icon to deploy
 func select_bug_for_deployment(scene: PackedScene, cost: int, title: String) -> void:
+	display_stats_for_bug_name(title)
 	if nectar < cost:
 		show_notice("❌ Недостаточно нектара! Нужно: %d🍯 (у вас: %d🍯)" % [cost, nectar], Color(1, 0.35, 0.3))
 		return
@@ -178,6 +195,7 @@ func cancel_deployment() -> void:
 	if forest_map and forest_map.allied_base:
 		forest_map.allied_base.set_highlight_for_deployment(false)
 	_update_bug_button_styles()
+	clear_bug_stats()
 	show_notice("Выбор отменен.", Color(0.8, 0.8, 0.8))
 
 func _update_bug_button_styles() -> void:
@@ -264,8 +282,7 @@ func show_notice(text: String, color: Color = Color.WHITE) -> void:
 
 func select_unit(unit: Node3D) -> void:
 	selected_unit = unit
-	if label_selected_bug and "unit_name" in unit:
-		label_selected_bug.text = "Выбран: %s\n(Нажмите F для Bug-Cam)" % unit.unit_name
+	display_stats_from_unit(unit)
 
 func toggle_bug_cam_on_selected() -> void:
 	if not selected_unit:
@@ -281,10 +298,62 @@ func _on_unit_died(unit: Node3D) -> void:
 	active_units.erase(unit)
 	if selected_unit == unit:
 		selected_unit = null
+		clear_bug_stats()
 		if rts_camera and rts_camera.is_bug_cam:
 			rts_camera.reset_to_overview()
-		if label_selected_bug:
-			label_selected_bug.text = "Жук погиб!"
+
+func spawn_fallen_nectar_drop(pos: Vector3, lane_idx: int) -> Node3D:
+	var drop = FALLEN_NECTAR_DROP_SCENE.instantiate()
+	drop.position = pos
+	drop.lane_index = lane_idx
+	add_child(drop)
+	fallen_nectar_drops.append(drop)
+	drop.tree_exited.connect(func(): fallen_nectar_drops.erase(drop))
+	var lane_names = ["Верхнюю (1)", "Среднюю (2)", "Нижнюю (3)"]
+	show_notice("🍯 Цветок сбросил нектар на %s дорожку! Муравей может забрать его." % lane_names[lane_idx], Color(1.0, 0.85, 0.2))
+	return drop
+
+func display_bug_stats(title_str: String, hp_str: String, speed_str: String, dmg_str: String, cadence_str: String, desc_str: String) -> void:
+	if label_stat_title:
+		label_stat_title.text = "📊 %s" % title_str
+	if label_stat_hp:
+		label_stat_hp.text = "❤️ Здоровье: %s" % hp_str
+	if label_stat_speed:
+		label_stat_speed.text = "🏃 Скорость бега: %s" % speed_str
+	if label_stat_damage:
+		label_stat_damage.text = "⚔️ Сила атаки: %s" % dmg_str
+	if label_stat_cadence:
+		label_stat_cadence.text = "⏱️ Скорость атаки: %s" % cadence_str
+	if label_stat_desc:
+		label_stat_desc.text = desc_str
+
+func display_stats_for_bug_name(bname: String) -> void:
+	match bname:
+		"Муравей-Сборщик":
+			display_bug_stats("Муравей-Сборщик (40🍯)", "40 HP (легко убить)", "4.6 м/с (быстрый)", "5 урона (слабая)", "0.8 с", "💡 Быстрый сборщик: собирает упавший нектар с дорожек и носит на базу.")
+		"Летающая Пчелка":
+			display_bug_stats("Летающая Пчелка (50🍯)", "45 HP", "5.5 м/с (полет над полем)", "0 урона (мирный)", "—", "💡 Воздушный сборщик: забирает нектар прямо с цветков за 10с до их падения (+30🍯).")
+		"Жук-Лесоруб":
+			display_bug_stats("Жук-Лесоруб (60🍯)", "100 HP (средняя броня)", "3.0 м/с", "16 урона", "1.0 с", "💡 Лесоруб: распиливает поваленные бревна и препятствия на пути.")
+		"Танк-Носорог":
+			display_bug_stats("Танк-Носорог (85🍯)", "260 HP (огромный запас)", "1.8 м/с (медленный ход)", "30 урона (повышенная)", "1.6 с (медленный удар)", "💡 Танк: медленный, медленно бьет, но имеет колоссальное HP и сокрушительный таран.")
+		"Термит-Воин":
+			display_bug_stats("Термит-Воин (Враг)", "85 HP", "2.6 м/с", "16 урона", "1.1 с", "💡 Вражеский солдат: совершает набеги на нашу колонию.")
+
+func display_stats_from_unit(unit: Node3D) -> void:
+	if not is_instance_valid(unit):
+		return
+	var uname = unit.get("unit_name") if "unit_name" in unit else "Юнит"
+	var chp = int(unit.get("current_health")) if "current_health" in unit else 0
+	var mhp = int(unit.get("max_health")) if "max_health" in unit else 0
+	var spd = unit.get("move_speed") if "move_speed" in unit else 0.0
+	var dmg = unit.get("attack_damage") if "attack_damage" in unit else 0.0
+	var cad = unit.get("attack_cooldown") if "attack_cooldown" in unit else 0.0
+	
+	display_bug_stats(uname, "%d / %d HP" % [chp, mhp], "%.1f м/с" % spd, "%.0f урона" % dmg if dmg > 0 else "—", "%.1f с" % cad if cad > 0 else "—", "Нажмите F для вида от лица (Bug-Cam)")
+
+func clear_bug_stats() -> void:
+	display_bug_stats("ХАРАКТЕРИСТИКИ:", "—", "—", "—", "—", "Кликните по жуку для деталей (F — вид от лица)")
 
 func saw_mid_log() -> void:
 	if forest_map:

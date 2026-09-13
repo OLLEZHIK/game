@@ -96,25 +96,49 @@ func _process_flying_to_target(target: Vector3, delta: float) -> void:
 			_update_hp_display()
 			pick_next_flower()
 
+var target_flower_node: Node = null
+
 func _process_gathering(delta: float) -> void:
 	gather_timer -= delta
 	if gather_timer <= 0.0:
 		carried_nectar = 30
+		if target_flower_node and is_instance_valid(target_flower_node) and target_flower_node.has_method("harvest_by_bee"):
+			target_flower_node.harvest_by_bee()
 		current_state = BeeState.RETURNING_HOME
 		_update_hp_display()
 
 func pick_next_flower() -> void:
 	current_state = BeeState.FLYING_TO_FLOWER
-	# Targets across all 3 lanes (daisies)
-	var flower_candidates = [
-		Vector3(-6, 0, 10.5),   # Bot lane daisy 1
-		Vector3(8, 0, 11.5),    # Bot lane daisy 2
-		Vector3(-8, 0, -10.5),  # Top lane daisy 3
-		Vector3(6, 0, -11.0),   # Top lane daisy 4
-		Vector3(0, 0, 6.0)      # Mid-bot daisy 5
-	]
-	flower_candidates.shuffle()
-	target_flower_pos = flower_candidates[0]
+	target_flower_node = _find_flower_with_nectar()
+	if target_flower_node:
+		target_flower_pos = target_flower_node.global_position
+	else:
+		# Fallback to daisy positions across the map
+		var flower_candidates = [
+			Vector3(-6, 0, 10.5),   # Bot lane daisy 1
+			Vector3(8, 0, 11.5),    # Bot lane daisy 2
+			Vector3(-8, 0, -10.5),  # Top lane daisy 3
+			Vector3(6, 0, -11.0),   # Top lane daisy 4
+			Vector3(0, 0, 6.0)      # Mid-bot daisy 5
+		]
+		flower_candidates.shuffle()
+		target_flower_pos = flower_candidates[0]
+
+func _find_flower_with_nectar() -> Node:
+	var tree = get_tree()
+	if not tree:
+		return null
+	var daisies_node = tree.root.find_child("Daisies", true, false)
+	if not daisies_node:
+		return null
+	var ready_flowers: Array[Node] = []
+	for child in daisies_node.get_children():
+		if ("has_nectar" in child) and child.has_nectar:
+			ready_flowers.append(child)
+	if ready_flowers.size() > 0:
+		ready_flowers.shuffle()
+		return ready_flowers[0]
+	return null
 
 func take_damage(amount: float) -> void:
 	if current_state == BeeState.DEAD:

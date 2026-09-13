@@ -92,10 +92,21 @@ func _process_marching(delta: float) -> void:
 			current_state = UnitState.SAWING
 			return
 
-	# Harvester reaching flower
-	if role == UnitRole.HARVESTER and not is_enemy and lane_index == 2:
-		# Mid-way on bottom lane is the nectar glade
-		if progress_dist >= path_total_len * 0.48:
+	# Harvester: check for fallen nectar on this lane path
+	if role == UnitRole.HARVESTER and not is_enemy:
+		var drop = _find_nearest_fallen_drop()
+		if drop:
+			carried_nectar = drop.collect(self)
+			current_state = UnitState.RETURNING
+			march_direction = -1.0 # head back to base
+			_update_hp_display()
+			var main_game = get_tree().root.find_child("Main", true, false)
+			if main_game and main_game.has_method("show_notice"):
+				main_game.show_notice("🐜 Муравей подобрал упавший нектар (+%d🍯)!" % carried_nectar, Color(0.4, 1.0, 0.5))
+			return
+
+		# Also check if reached flower glade on bottom lane
+		if lane_index == 2 and progress_dist >= path_total_len * 0.48:
 			current_state = UnitState.HARVESTING
 			_attack_timer = 2.5 # harvesting duration
 			return
@@ -117,6 +128,21 @@ func _process_marching(delta: float) -> void:
 	if (not is_enemy and progress_dist >= path_total_len) or (is_enemy and progress_dist <= 0.0):
 		# Reached opposing base
 		queue_free()
+
+func _find_nearest_fallen_drop() -> Area3D:
+	var tree = get_tree()
+	if not tree:
+		return null
+	var main_node = tree.root.find_child("Main", true, false)
+	if not main_node or not ("fallen_nectar_drops" in main_node):
+		return null
+	
+	for drop in main_node.fallen_nectar_drops:
+		if is_instance_valid(drop) and not drop.is_collected:
+			if drop.lane_index == lane_index:
+				if global_position.distance_to(drop.global_position) <= 2.5:
+					return drop
+	return null
 
 func _find_nearest_enemy_on_lane() -> CharacterBody3D:
 	var tree = get_tree()

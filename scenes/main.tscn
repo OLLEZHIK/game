@@ -191,6 +191,60 @@ text = " Танк-Носорог (85🍯)"
 icon = ExtResource("7_irhino")
 expand_icon = true
 
+[node name="BugStatsPanel" type="PanelContainer" parent="UI/LeftPanel/ScrollContainer/MarginContainer/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="StatsMargin" type="MarginContainer" parent="UI/LeftPanel/ScrollContainer/MarginContainer/VBoxContainer/BugStatsPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 6
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 6
+
+[node name="StatsVBox" type="VBoxContainer" parent="UI/LeftPanel/ScrollContainer/MarginContainer/VBoxContainer/BugStatsPanel/StatsMargin"]
+layout_mode = 2
+theme_override_constants/separation = 3
+
+[node name="LabelStatTitle" type="Label" parent="UI/LeftPanel/ScrollContainer/MarginContainer/VBoxContainer/BugStatsPanel/StatsMargin/StatsVBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.9, 0.3, 1)
+theme_override_font_sizes/font_size = 12
+text = "📊 ХАРАКТЕРИСТИКИ:"
+
+[node name="LabelStatHp" type="Label" parent="UI/LeftPanel/ScrollContainer/MarginContainer/VBoxContainer/BugStatsPanel/StatsMargin/StatsVBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 11
+text = "❤️ Здоровье: —"
+
+[node name="LabelStatSpeed" type="Label" parent="UI/LeftPanel/ScrollContainer/MarginContainer/VBoxContainer/BugStatsPanel/StatsMargin/StatsVBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 11
+text = "🏃 Скорость: —"
+
+[node name="LabelStatDamage" type="Label" parent="UI/LeftPanel/ScrollContainer/MarginContainer/VBoxContainer/BugStatsPanel/StatsMargin/StatsVBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 11
+text = "⚔️ Атака: —"
+
+[node name="LabelStatCadence" type="Label" parent="UI/LeftPanel/ScrollContainer/MarginContainer/VBoxContainer/BugStatsPanel/StatsMargin/StatsVBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 11
+text = "⏱️ Скорость атаки: —"
+
+[node name="LabelStatDesc" type="Label" parent="UI/LeftPanel/ScrollContainer/MarginContainer/VBoxContainer/BugStatsPanel/StatsMargin/StatsVBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.7, 0.9, 1, 1)
+theme_override_font_sizes/font_size = 10
+text = "Наведите на жука для характеристик"
+autowrap_mode = 2
+
 [node name="HSeparator2" type="HSeparator" parent="UI/LeftPanel/ScrollContainer/MarginContainer/VBoxContainer"]
 layout_mode = 2
 
@@ -241,17 +295,6 @@ unique_name_in_owner = true
 layout_mode = 2
 focus_mode = 0
 text = "🪓 Распилить сук (Пробел)"
-
-[node name="HSeparator4" type="HSeparator" parent="UI/LeftPanel/ScrollContainer/MarginContainer/VBoxContainer"]
-layout_mode = 2
-
-[node name="LabelSelectedBug" type="Label" parent="UI/LeftPanel/ScrollContainer/MarginContainer/VBoxContainer"]
-unique_name_in_owner = true
-layout_mode = 2
-theme_override_colors/font_color = Color(0.5, 0.9, 1, 1)
-theme_override_font_sizes/font_size = 12
-text = "Кликните по жуку для выбора"
-autowrap_mode = 2
 
 [node name="ControlGuide" type="PanelContainer" parent="UI"]
 anchors_preset = 3
