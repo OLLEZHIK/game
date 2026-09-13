@@ -8,6 +8,7 @@
 [ext_resource type="Texture2D" path="res://assets/icons/icon_woodcutter.svg" id="6_iwood"]
 [ext_resource type="Texture2D" path="res://assets/icons/icon_rhino.svg" id="7_irhino"]
 [ext_resource type="Texture2D" path="res://assets/icons/icon_termite.svg" id="8_iterm"]
+[ext_resource type="Texture2D" path="res://assets/icons/icon_stinkbug.svg" id="9_istink"]
 
 [node name="Main" type="Node3D"]
 script = ExtResource("1_mscript")
@@ -15,7 +16,7 @@ script = ExtResource("1_mscript")
 [node name="ForestMap" parent="." instance=ExtResource("2_mmap")]
 
 [node name="RTSCamera" parent="." instance=ExtResource("3_mcam")]
-transform = Transform3D(0.965926, 0, 0.258819, 0, 1, 0, -0.258819, 0, 0.965926, -0.5, 0, -1)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.5, 0, 3)
 
 [node name="UI" type="CanvasLayer" parent="."]
 
@@ -191,6 +192,15 @@ text = " Танк-Носорог (85🍯)"
 icon = ExtResource("7_irhino")
 expand_icon = true
 
+[node name="BtnSpawnStinkBug" type="Button" parent="UI/LeftPanel/ScrollContainer/MarginContainer/VBoxContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 36)
+layout_mode = 2
+focus_mode = 0
+text = " Клоп-Стрелок (75🍯)"
+icon = ExtResource("9_istink")
+expand_icon = true
+
 [node name="BugStatsPanel" type="PanelContainer" parent="UI/LeftPanel/ScrollContainer/MarginContainer/VBoxContainer"]
 unique_name_in_owner = true
 layout_mode = 2
@@ -297,17 +307,14 @@ focus_mode = 0
 text = "🪓 Распилить сук (Пробел)"
 
 [node name="ControlGuide" type="PanelContainer" parent="UI"]
-anchors_preset = 3
+anchors_preset = 1
 anchor_left = 1.0
-anchor_top = 1.0
 anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = -340.0
-offset_top = -180.0
+offset_left = -330.0
+offset_top = 58.0
 offset_right = -15.0
-offset_bottom = -15.0
+offset_bottom = 220.0
 grow_horizontal = 0
-grow_vertical = 0
 mouse_filter = 2
 
 [node name="MarginContainer" type="MarginContainer" parent="UI/ControlGuide"]

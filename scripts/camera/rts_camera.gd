@@ -9,10 +9,10 @@ extends Node3D
 @onready var elevation_node: Node3D = $Elevation
 @onready var camera_3d: Camera3D = $Elevation/Camera3D
 
-var default_position: Vector3 = Vector3(-0.5, 0, -1.0)
-var _target_position: Vector3 = Vector3(-0.5, 0, -1.0)
-var _target_zoom: float = 36.0
-var _current_zoom: float = 36.0
+var default_position: Vector3 = Vector3(6.5, 0, 3.0)
+var _target_position: Vector3 = Vector3(6.5, 0, 3.0)
+var _target_zoom: float = 40.0
+var _current_zoom: float = 40.0
 
 # Bug-Cam tracking
 var tracked_target: Node3D = null
@@ -47,8 +47,8 @@ func _process_overview(delta: float) -> void:
 		move_input = move_input.normalized()
 		_target_position.x += move_input.x * move_speed * delta
 		_target_position.z += move_input.y * move_speed * delta
-		_target_position.x = clampf(_target_position.x, -12.0, 12.0)
-		_target_position.z = clampf(_target_position.z, -8.0, 8.0)
+		_target_position.x = clampf(_target_position.x, -6.0, 18.0)
+		_target_position.z = clampf(_target_position.z, -8.0, 14.0)
 	elif is_fixed_overview:
 		# Gently drift back to center overview
 		_target_position = _target_position.lerp(default_position, 2.0 * delta)
@@ -68,15 +68,15 @@ func _process_bug_cam(delta: float) -> void:
 func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton and event.is_pressed():
 		if event.button_index == MOUSE_BUTTON_WHEEL_UP:
-			_target_zoom = clampf(_target_zoom - 2.0, 16.0, 32.0)
+			_target_zoom = clampf(_target_zoom - 2.5, 22.0, 52.0)
 		elif event.button_index == MOUSE_BUTTON_WHEEL_DOWN:
-			_target_zoom = clampf(_target_zoom + 2.0, 16.0, 32.0)
+			_target_zoom = clampf(_target_zoom + 2.5, 22.0, 52.0)
 
 func reset_to_overview() -> void:
 	is_bug_cam = false
 	tracked_target = null
 	_target_position = default_position
-	_target_zoom = 24.0
+	_target_zoom = 40.0
 
 func toggle_bug_cam(target: Node3D) -> void:
 	if is_bug_cam:

@@ -133,11 +133,17 @@ func _find_flower_with_nectar() -> Node:
 		return null
 	var ready_flowers: Array[Node] = []
 	for child in daisies_node.get_children():
-		if ("has_nectar" in child) and child.has_nectar:
+		if child.has_method("can_be_targeted_by_bee") and child.can_be_targeted_by_bee():
 			ready_flowers.append(child)
+		elif ("has_nectar" in child) and child.has_nectar and not ("is_reserved_by_bee" in child and child.is_reserved_by_bee):
+			ready_flowers.append(child)
+			
 	if ready_flowers.size() > 0:
 		ready_flowers.shuffle()
-		return ready_flowers[0]
+		var chosen = ready_flowers[0]
+		if chosen.has_method("reserve_for_bee"):
+			chosen.reserve_for_bee(self)
+		return chosen
 	return null
 
 func take_damage(amount: float) -> void:
@@ -150,6 +156,8 @@ func take_damage(amount: float) -> void:
 
 func die() -> void:
 	current_state = BeeState.DEAD
+	if target_flower_node and is_instance_valid(target_flower_node) and target_flower_node.has_method("release_bee_reservation"):
+		target_flower_node.release_bee_reservation(self)
 	unit_died.emit(self)
 	var tween = create_tween()
 	tween.tween_property(self, "scale", Vector3.ZERO, 0.35)

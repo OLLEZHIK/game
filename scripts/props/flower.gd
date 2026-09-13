@@ -6,11 +6,17 @@ signal nectar_harvested_by_bee()
 
 @export var can_drop_nectar: bool = true
 @export var drop_interval: float = 10.0
+@export var reload_time: float = 8.0
 @export var associated_lane_index: int = 2
 @export var drop_target_z: float = 12.0
 
 var has_nectar: bool = true
+var is_reloading: bool = false
 var nectar_timer: float = 0.0
+
+# Bee single-reservation system: only 1 bee can target this flower!
+var is_reserved_by_bee: bool = false
+var reserving_bee: Node = null
 
 @onready var droplet_mesh: MeshInstance3D = $NectarDroplet if has_node("NectarDroplet") else null
 @onready var nectar_light: OmniLight3D = $NectarLight if has_node("NectarLight") else null
@@ -20,13 +26,35 @@ var _initial_droplet_scale: Vector3 = Vector3.ONE
 func _ready() -> void:
 	if droplet_mesh:
 		_initial_droplet_scale = droplet_mesh.scale
+	# Read balance settings if available
+	drop_interval = GameBalance.FLOWER_DROP_INTERVAL
+	reload_time = GameBalance.FLOWER_RELOAD_TIME
 	# Stagger initial timers so flowers don't drop at the exact same second
 	nectar_timer = randf_range(2.0, 7.0)
 	_update_visuals()
 
+func can_be_targeted_by_bee() -> bool:
+	return has_nectar and not is_reserved_by_bee
+
+func reserve_for_bee(bee: Node) -> bool:
+	if not can_be_targeted_by_bee():
+		return false
+	is_reserved_by_bee = true
+	reserving_bee = bee
+	return true
+
+func release_bee_reservation(bee: Node = null) -> void:
+	if reserving_bee == bee or bee == null:
+		is_reserved_by_bee = false
+		reserving_bee = null
+
 func _process(delta: float) -> void:
 	if not can_drop_nectar:
 		return
+
+	# If reserving bee died or became invalid, release reservation
+	if is_reserved_by_bee and not is_instance_valid(reserving_bee):
+		release_bee_reservation()
 
 	if has_nectar:
 		nectar_timer += delta
@@ -47,6 +75,7 @@ func _process(delta: float) -> void:
 func drop_nectar_onto_path() -> void:
 	has_nectar = false
 	nectar_timer = 0.0
+	release_bee_reservation()
 	_update_visuals()
 
 	# Drop target coordinate on the dirt path of the lane
@@ -60,11 +89,13 @@ func drop_nectar_onto_path() -> void:
 
 	nectar_dropped.emit(drop_pos, associated_lane_index)
 
-	# Flower begins regenerating a new nectar drop after 4 seconds
+	# Flower begins reload cooldown before new nectar appears
+	is_reloading = true
 	var tween = create_tween()
-	tween.tween_interval(4.0)
+	tween.tween_interval(reload_time)
 	tween.tween_callback(func():
 		has_nectar = true
+		is_reloading = false
 		nectar_timer = 0.0
 		_update_visuals()
 	)
@@ -74,15 +105,18 @@ func harvest_by_bee() -> bool:
 		return false
 
 	has_nectar = false
+	is_reloading = true
 	nectar_timer = 0.0
+	release_bee_reservation()
 	_update_visuals()
 	nectar_harvested_by_bee.emit()
 
-	# Regrow nectar after gathering
+	# Reload cooldown before regenerating new nectar
 	var tween = create_tween()
-	tween.tween_interval(4.5)
+	tween.tween_interval(reload_time)
 	tween.tween_callback(func():
 		has_nectar = true
+		is_reloading = false
 		nectar_timer = 0.0
 		_update_visuals()
 	)

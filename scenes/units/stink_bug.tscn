@@ -1,0 +1,78 @@
+[gd_scene load_steps=8 format=3 uid="uid://u_stink_bug01"]
+
+[ext_resource type="Script" path="res://scripts/units/bug_unit.gd" id="1_ustink"]
+[ext_resource type="Material" uid="uid://m_stinkbug_p01" path="res://assets/materials/mat_stinkbug_purple.tres" id="2_mpurple"]
+[ext_resource type="Material" uid="uid://m_ant_chitin01" path="res://assets/materials/mat_ant_chitin.tres" id="3_mdark"]
+
+[sub_resource type="PrismMesh" id="PrismMesh_shield"]
+material = ExtResource("2_mpurple")
+left_to_right = 0.5
+size = Vector3(1.1, 1.2, 0.45)
+
+[sub_resource type="SphereMesh" id="SphereMesh_head"]
+material = ExtResource("3_mdark")
+radius = 0.28
+height = 0.44
+radial_segments = 10
+rings = 6
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_proboscis"]
+material = ExtResource("2_mpurple")
+top_radius = 0.06
+bottom_radius = 0.12
+height = 0.55
+radial_segments = 8
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_stink"]
+radius = 0.65
+
+[node name="StinkBug" type="CharacterBody3D"]
+script = ExtResource("1_ustink")
+unit_name = "Клоп (Стрелок)"
+role = 4
+max_health = 70.0
+move_speed = 2.8
+attack_damage = 22.0
+attack_cooldown = 1.4
+attack_range = 5.2
+is_ranged = true
+
+[node name="Visuals" type="Node3D" parent="."]
+
+[node name="BodyMesh" type="Node3D" parent="Visuals"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.35, 0)
+
+[node name="ShieldCarapace" type="MeshInstance3D" parent="Visuals/BodyMesh"]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 0.1, 0.1)
+mesh = SubResource("PrismMesh_shield")
+
+[node name="Head" type="MeshInstance3D" parent="Visuals/BodyMesh"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.08, -0.55)
+mesh = SubResource("SphereMesh_head")
+
+[node name="Proboscis" type="MeshInstance3D" parent="Visuals/BodyMesh"]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0.05, -0.85)
+mesh = SubResource("CylinderMesh_proboscis")
+
+[node name="AntennaL" type="MeshInstance3D" parent="Visuals/BodyMesh"]
+transform = Transform3D(0.965926, 0.258819, 0, -0.258819, 0.965926, 0, 0, 0, 1, -0.25, 0.18, -0.65)
+mesh = SubResource("CylinderMesh_proboscis")
+
+[node name="AntennaR" type="MeshInstance3D" parent="Visuals/BodyMesh"]
+transform = Transform3D(0.965926, -0.258819, 0, 0.258819, 0.965926, 0, 0, 0, 1, 0.25, 0.18, -0.65)
+mesh = SubResource("CylinderMesh_proboscis")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.35, 0)
+shape = SubResource("SphereShape3D_stink")
+
+[node name="HpLabel" type="Label3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.3, 0)
+pixel_size = 0.0075
+billboard = 1
+double_sided = false
+text = "💜 Клоп [70/70]"
+font_size = 26
+outline_size = 5
+outline_color = Color(0, 0, 0, 0.9)
+modulate = Color(0.85, 0.4, 1, 1)

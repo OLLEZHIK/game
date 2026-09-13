@@ -1,0 +1,11 @@
+[gd_resource type="StandardMaterial3D" format=3 uid="uid://m_spit_acid01"]
+
+[resource]
+resource_name = "MatSpitAcid"
+albedo_color = Color(0.85, 0.25, 1.0, 0.95)
+emission_enabled = true
+emission = Color(0.75, 0.15, 0.95, 1)
+emission_energy_multiplier = 3.5
+roughness = 0.2
+clearcoat_enabled = true
+clearcoat = 1.0

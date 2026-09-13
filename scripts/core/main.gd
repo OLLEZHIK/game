@@ -7,6 +7,7 @@ const RHINO_BEETLE_SCENE = preload("res://scenes/units/rhino_beetle.tscn")
 const WOODCUTTER_BEETLE_SCENE = preload("res://scenes/units/woodcutter_beetle.tscn")
 const FLYING_BEE_SCENE = preload("res://scenes/units/flying_bee.tscn")
 const TERMITE_SOLDIER_SCENE = preload("res://scenes/units/termite_soldier.tscn")
+const STINK_BUG_SCENE = preload("res://scenes/units/stink_bug.tscn")
 const FALLEN_NECTAR_DROP_SCENE = preload("res://scenes/props/fallen_nectar_drop.tscn")
 
 @onready var forest_map: ForestMap = $ForestMap
@@ -25,6 +26,7 @@ const FALLEN_NECTAR_DROP_SCENE = preload("res://scenes/props/fallen_nectar_drop.
 @onready var btn_spawn_bee: Button = %BtnSpawnBee if has_node("%BtnSpawnBee") else null
 @onready var btn_spawn_woodcutter: Button = %BtnSpawnWoodcutter
 @onready var btn_spawn_rhino: Button = %BtnSpawnRhino
+@onready var btn_spawn_stink_bug: Button = %BtnSpawnStinkBug if has_node("%BtnSpawnStinkBug") else null
 @onready var btn_spawn_enemy: Button = %BtnSpawnEnemy if has_node("%BtnSpawnEnemy") else null
 @onready var label_wave_status: Label = %LabelWaveStatus if has_node("%LabelWaveStatus") else null
 
@@ -68,7 +70,7 @@ func _ready() -> void:
 	
 	# Prevent buttons from stealing keyboard focus
 	var all_btns = [btn_saw_log, btn_select_lane1, btn_select_lane2, btn_select_lane3, 
-		btn_spawn_worker, btn_spawn_bee, btn_spawn_woodcutter, btn_spawn_rhino, btn_spawn_enemy]
+		btn_spawn_worker, btn_spawn_bee, btn_spawn_woodcutter, btn_spawn_rhino, btn_spawn_stink_bug, btn_spawn_enemy]
 	for btn in all_btns:
 		if btn:
 			btn.focus_mode = Control.FOCUS_NONE
@@ -86,17 +88,20 @@ func _ready() -> void:
 
 	# Bug selection buttons
 	if btn_spawn_worker:
-		btn_spawn_worker.pressed.connect(func(): select_bug_for_deployment(WORKER_ANT_SCENE, 40, "Муравей-Сборщик"))
+		btn_spawn_worker.pressed.connect(func(): select_bug_for_deployment(WORKER_ANT_SCENE, GameBalance.UNITS["WORKER_ANT"].cost, "Муравей-Сборщик"))
 		btn_spawn_worker.mouse_entered.connect(func(): display_stats_for_bug_name("Муравей-Сборщик"))
 	if btn_spawn_bee:
-		btn_spawn_bee.pressed.connect(func(): select_bug_for_deployment(FLYING_BEE_SCENE, 50, "Летающая Пчелка"))
+		btn_spawn_bee.pressed.connect(func(): select_bug_for_deployment(FLYING_BEE_SCENE, GameBalance.UNITS["FLYING_BEE"].cost, "Летающая Пчелка"))
 		btn_spawn_bee.mouse_entered.connect(func(): display_stats_for_bug_name("Летающая Пчелка"))
 	if btn_spawn_woodcutter:
-		btn_spawn_woodcutter.pressed.connect(func(): select_bug_for_deployment(WOODCUTTER_BEETLE_SCENE, 60, "Жук-Лесоруб"))
+		btn_spawn_woodcutter.pressed.connect(func(): select_bug_for_deployment(WOODCUTTER_BEETLE_SCENE, GameBalance.UNITS["WOODCUTTER_BEETLE"].cost, "Жук-Лесоруб"))
 		btn_spawn_woodcutter.mouse_entered.connect(func(): display_stats_for_bug_name("Жук-Лесоруб"))
 	if btn_spawn_rhino:
-		btn_spawn_rhino.pressed.connect(func(): select_bug_for_deployment(RHINO_BEETLE_SCENE, 85, "Танк-Носорог"))
+		btn_spawn_rhino.pressed.connect(func(): select_bug_for_deployment(RHINO_BEETLE_SCENE, GameBalance.UNITS["RHINO_BEETLE"].cost, "Танк-Носорог"))
 		btn_spawn_rhino.mouse_entered.connect(func(): display_stats_for_bug_name("Танк-Носорог"))
+	if btn_spawn_stink_bug:
+		btn_spawn_stink_bug.pressed.connect(func(): select_bug_for_deployment(STINK_BUG_SCENE, GameBalance.UNITS["STINK_BUG"].cost, "Клоп-Стрелок"))
+		btn_spawn_stink_bug.mouse_entered.connect(func(): display_stats_for_bug_name("Клоп-Стрелок"))
 
 	# Enemy manual trigger button
 	if btn_spawn_enemy:
@@ -207,6 +212,8 @@ func _update_bug_button_styles() -> void:
 		btn_spawn_woodcutter.text = ("▶ Лесоруб (60🍯) [ВЫБРАН]" if deploy_bug_name == "Жук-Лесоруб" else " Жук-Лесоруб (60🍯)")
 	if btn_spawn_rhino:
 		btn_spawn_rhino.text = ("▶ Носорог (85🍯) [ВЫБРАН]" if deploy_bug_name == "Танк-Носорог" else " Танк-Носорог (85🍯)")
+	if btn_spawn_stink_bug:
+		btn_spawn_stink_bug.text = ("▶ Клоп (75🍯) [ВЫБРАН]" if deploy_bug_name == "Клоп-Стрелок" else " Клоп-Стрелок (75🍯)")
 	
 	if label_active_lane:
 		if deploy_bug_name != "":
@@ -328,17 +335,23 @@ func display_bug_stats(title_str: String, hp_str: String, speed_str: String, dmg
 		label_stat_desc.text = desc_str
 
 func display_stats_for_bug_name(bname: String) -> void:
+	var key = ""
 	match bname:
-		"Муравей-Сборщик":
-			display_bug_stats("Муравей-Сборщик (40🍯)", "40 HP (легко убить)", "4.6 м/с (быстрый)", "5 урона (слабая)", "0.8 с", "💡 Быстрый сборщик: собирает упавший нектар с дорожек и носит на базу.")
-		"Летающая Пчелка":
-			display_bug_stats("Летающая Пчелка (50🍯)", "45 HP", "5.5 м/с (полет над полем)", "0 урона (мирный)", "—", "💡 Воздушный сборщик: забирает нектар прямо с цветков за 10с до их падения (+30🍯).")
-		"Жук-Лесоруб":
-			display_bug_stats("Жук-Лесоруб (60🍯)", "100 HP (средняя броня)", "3.0 м/с", "16 урона", "1.0 с", "💡 Лесоруб: распиливает поваленные бревна и препятствия на пути.")
-		"Танк-Носорог":
-			display_bug_stats("Танк-Носорог (85🍯)", "260 HP (огромный запас)", "1.8 м/с (медленный ход)", "30 урона (повышенная)", "1.6 с (медленный удар)", "💡 Танк: медленный, медленно бьет, но имеет колоссальное HP и сокрушительный таран.")
-		"Термит-Воин":
-			display_bug_stats("Термит-Воин (Враг)", "85 HP", "2.6 м/с", "16 урона", "1.1 с", "💡 Вражеский солдат: совершает набеги на нашу колонию.")
+		"Муравей-Сборщик": key = "WORKER_ANT"
+		"Летающая Пчелка": key = "FLYING_BEE"
+		"Жук-Лесоруб": key = "WOODCUTTER_BEETLE"
+		"Танк-Носорог": key = "RHINO_BEETLE"
+		"Клоп-Стрелок", "Клоп (Стрелок)": key = "STINK_BUG"
+		"Термит-Воин": key = "TERMITE_SOLDIER"
+
+	if key != "" and GameBalance.UNITS.has(key):
+		var s = GameBalance.UNITS[key]
+		var title = "%s (%d🍯)" % [s.title, s.cost] if s.cost > 0 else s.title
+		var hp_str = "%d HP" % int(s.max_health)
+		var spd_str = "%.1f м/с" % s.move_speed
+		var dmg_str = "%.0f урона" % s.attack_damage if s.attack_damage > 0 else "—"
+		var cad_str = "%.1f с" % s.attack_cooldown if s.attack_cooldown > 0 else "—"
+		display_bug_stats(title, hp_str, spd_str, dmg_str, cad_str, s.desc)
 
 func display_stats_from_unit(unit: Node3D) -> void:
 	if not is_instance_valid(unit):

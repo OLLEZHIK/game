@@ -8,7 +8,8 @@ enum UnitRole {
 	HARVESTER,   # Рабочий: идет за нектаром, возвращается в улей
 	TANK,        # Танк (Жук-носорог): держит линию, поглощает урон
 	WOODCUTTER,  # Лесоруб (Жук-усач): пилит поваленные бревна
-	SOLDIER      # Воин термитов: атакует врагов и базу
+	SOLDIER,     # Воин термитов: атакует врагов и базу
+	RANGED       # Стрелок (Клоп): дальняя атака кислотным плевком
 }
 
 enum UnitState {
@@ -20,13 +21,17 @@ enum UnitState {
 	DEAD
 }
 
+const SPIT_PROJECTILE_SCENE = preload("res://scenes/props/spit_projectile.tscn")
+
 @export var unit_name: String = "Муравей-Рабочий"
 @export var role: UnitRole = UnitRole.HARVESTER
 @export var is_enemy: bool = false
+@export var is_ranged: bool = false
 @export var max_health: float = 60.0
 @export var move_speed: float = 3.5
 @export var attack_damage: float = 8.0
 @export var attack_cooldown: float = 1.0
+@export var attack_range: float = 2.2
 
 var current_health: float = 60.0
 var current_state: UnitState = UnitState.MARCHING
@@ -118,6 +123,23 @@ func _process_marching(delta: float) -> void:
 		current_state = UnitState.FIGHTING
 		return
 
+	# Anti-stacking / Body Spacing queue: check if friendly unit is directly in front
+	var ally_in_front = _get_friendly_unit_in_front()
+	var spacing = GameBalance.UNIT_BODY_SPACING
+	if ally_in_front:
+		var gap = (ally_in_front.progress_dist - progress_dist) if march_direction > 0.0 else (progress_dist - ally_in_front.progress_dist)
+		if gap <= spacing:
+			# If we are a ranged unit (Клоп), check if there is an enemy in range over the ally!
+			if is_ranged:
+				var ranged_target = _find_nearest_enemy_on_lane()
+				if ranged_target:
+					target_enemy = ranged_target
+					current_state = UnitState.FIGHTING
+					return
+			# Hold position in line (queue behind friendly unit without stacking)
+			_apply_idle_breathe(delta)
+			return
+
 	# Move along curve
 	progress_dist += march_direction * move_speed * delta
 	progress_dist = clampf(progress_dist, 0.0, path_total_len)
@@ -144,6 +166,33 @@ func _find_nearest_fallen_drop() -> Area3D:
 					return drop
 	return null
 
+func _get_friendly_unit_in_front() -> BugUnit:
+	var tree = get_tree()
+	if not tree:
+		return null
+	var main_node = tree.root.find_child("Main", true, false)
+	if not main_node or not ("active_units" in main_node):
+		return null
+	
+	var nearest_ally: BugUnit = null
+	var min_gap: float = 9999.0
+	
+	for other in main_node.active_units:
+		if is_instance_valid(other) and other != self and (other is BugUnit):
+			if other.is_enemy == is_enemy and other.lane_index == lane_index:
+				if other.current_state != UnitState.DEAD and other.current_state != UnitState.RETURNING:
+					if march_direction > 0.0:
+						var gap = other.progress_dist - progress_dist
+						if gap > 0.001 and gap < min_gap:
+							min_gap = gap
+							nearest_ally = other
+					else:
+						var gap = progress_dist - other.progress_dist
+						if gap > 0.001 and gap < min_gap:
+							min_gap = gap
+							nearest_ally = other
+	return nearest_ally
+
 func _find_nearest_enemy_on_lane() -> CharacterBody3D:
 	var tree = get_tree()
 	if not tree:
@@ -152,14 +201,25 @@ func _find_nearest_enemy_on_lane() -> CharacterBody3D:
 	if not main_node or not ("active_units" in main_node):
 		return null
 	
+	var nearest_enemy: CharacterBody3D = null
+	var min_dist: float = attack_range
+	
 	for other in main_node.active_units:
 		if is_instance_valid(other) and other != self:
 			if ("is_enemy" in other) and (other.is_enemy != is_enemy):
 				if ("lane_index" in other) and other.lane_index == lane_index:
 					if ("current_state" in other) and other.current_state != UnitState.DEAD:
-						if global_position.distance_to(other.global_position) <= 2.2:
-							return other
-	return null
+						var d = global_position.distance_to(other.global_position)
+						if d <= min_dist:
+							min_dist = d
+							nearest_enemy = other
+	return nearest_enemy
+
+func _apply_idle_breathe(delta: float) -> void:
+	if not body_mesh:
+		return
+	_walk_anim_time += delta * 2.0
+	body_mesh.position.y = absf(sin(_walk_anim_time)) * 0.04
 
 func _process_harvesting(delta: float) -> void:
 	# Wobble animation while drinking nectar
@@ -210,13 +270,45 @@ func _process_fighting(_delta: float) -> void:
 		current_state = UnitState.MARCHING
 		return
 		
-	# Attack animation: lunge
-	if body_mesh:
-		body_mesh.position.z = sin(_walk_anim_time * 5.0) * 0.15
-		
+	var dist_to_enemy = global_position.distance_to(target_enemy.global_position)
+	if dist_to_enemy > attack_range * 1.35:
+		target_enemy = null
+		current_state = UnitState.MARCHING
+		return
+
+	# Face towards enemy
+	var dir = (target_enemy.global_position - global_position).normalized()
+	if dir.length_squared() > 0.001:
+		var target_yaw = atan2(-dir.x, -dir.z)
+		rotation.y = target_yaw
+
 	if _attack_timer <= 0.0:
 		_attack_timer = attack_cooldown
+		if is_ranged:
+			_perform_ranged_attack()
+		else:
+			_perform_melee_attack()
+
+func _perform_melee_attack() -> void:
+	if body_mesh:
+		var orig_z = body_mesh.position.z
+		var tw = create_tween()
+		tw.tween_property(body_mesh, "position:z", orig_z - 0.22, 0.08)
+		tw.tween_property(body_mesh, "position:z", orig_z, 0.15)
+	if is_instance_valid(target_enemy):
 		target_enemy.take_damage(attack_damage)
+
+func _perform_ranged_attack() -> void:
+	if body_mesh:
+		var orig_z = body_mesh.position.z
+		var tw = create_tween()
+		tw.tween_property(body_mesh, "position:z", orig_z + 0.15, 0.08)
+		tw.tween_property(body_mesh, "position:z", orig_z, 0.15)
+	if is_instance_valid(target_enemy) and SPIT_PROJECTILE_SCENE:
+		var proj = SPIT_PROJECTILE_SCENE.instantiate()
+		get_parent().add_child(proj)
+		var spawn_pos = global_position + Vector3(0, 0.45, 0)
+		proj.launch(spawn_pos, target_enemy, attack_damage)
 
 func _update_position_from_progress() -> void:
 	if not path_curve:
@@ -251,8 +343,14 @@ func take_damage(amount: float) -> void:
 func die() -> void:
 	current_state = UnitState.DEAD
 	unit_died.emit(self)
+	var col = find_child("CollisionShape3D", true, false)
+	if col:
+		col.set_deferred("disabled", true)
 	var tween = create_tween()
-	tween.tween_property(self, "scale", Vector3.ZERO, 0.4).set_trans(Tween.TRANS_BACK)
+	if body_mesh:
+		tween.tween_property(body_mesh, "scale", Vector3(0.01, 0.01, 0.01), 0.35).set_trans(Tween.TRANS_BACK)
+	else:
+		tween.tween_property(self, "scale", Vector3(0.05, 0.05, 0.05), 0.35).set_trans(Tween.TRANS_BACK)
 	await tween.finished
 	queue_free()
 

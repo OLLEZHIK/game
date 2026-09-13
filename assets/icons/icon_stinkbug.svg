@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <defs>
+    <radialGradient id="bg_stink" cx="50%" cy="40%" r="60%">
+      <stop offset="0%" stop-color="#ab47bc"/>
+      <stop offset="100%" stop-color="#4a148c"/>
+    </radialGradient>
+    <radialGradient id="chitin_stink" cx="40%" cy="30%" r="70%">
+      <stop offset="0%" stop-color="#9c27b0"/>
+      <stop offset="100%" stop-color="#311b92"/>
+    </radialGradient>
+    <radialGradient id="acid_drop" cx="35%" cy="35%" r="65%">
+      <stop offset="0%" stop-color="#e1bee7"/>
+      <stop offset="60%" stop-color="#d500f9"/>
+      <stop offset="100%" stop-color="#aa00ff"/>
+    </radialGradient>
+  </defs>
+  <!-- Background Badge -->
+  <rect x="2" y="2" width="60" height="60" rx="14" fill="url(#bg_stink)" stroke="#e1bee7" stroke-width="2.5"/>
+  <!-- Target Crosshairs subtle in background -->
+  <circle cx="32" cy="36" r="18" fill="none" stroke="#ba68c8" stroke-width="1" stroke-dasharray="3,3" opacity="0.4"/>
+  <!-- Shield Carapace (Pentatomidae shape) -->
+  <polygon points="32,18 48,28 44,48 32,56 20,48 16,28" fill="url(#chitin_stink)" stroke="#ce93d8" stroke-width="1.5"/>
+  <line x1="32" y1="24" x2="32" y2="52" stroke="#4a148c" stroke-width="1.8"/>
+  <!-- Head & Snout / Rostrum -->
+  <ellipse cx="32" cy="18" rx="6" ry="4.5" fill="#212121"/>
+  <!-- Spitting Acid Drop -->
+  <path d="M32 6 C 30 6 28 9 29 12 C 30 14 34 14 35 12 C 36 9 34 6 32 6 Z" fill="url(#acid_drop)" stroke="#fff" stroke-width="0.8"/>
+  <!-- Antennae -->
+  <path d="M28 16 Q 18 10 12 12" stroke="#212121" stroke-width="2" stroke-linecap="round" fill="none"/>
+  <path d="M36 16 Q 46 10 52 12" stroke="#212121" stroke-width="2" stroke-linecap="round" fill="none"/>
+  <!-- Glowing Eyes -->
+  <circle cx="28" cy="18" r="1.5" fill="#e040fb"/>
+  <circle cx="36" cy="18" r="1.5" fill="#e040fb"/>
+  <!-- Legs -->
+  <path d="M18 30 Q 10 32 8 38" stroke="#212121" stroke-width="2.2" stroke-linecap="round" fill="none"/>
+  <path d="M46 30 Q 54 32 56 38" stroke="#212121" stroke-width="2.2" stroke-linecap="round" fill="none"/>
+  <path d="M19 44 Q 12 48 10 54" stroke="#212121" stroke-width="2.2" stroke-linecap="round" fill="none"/>
+  <path d="M45 44 Q 52 48 54 54" stroke="#212121" stroke-width="2.2" stroke-linecap="round" fill="none"/>
+</svg>
