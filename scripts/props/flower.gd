@@ -219,7 +219,7 @@ func _trigger_nectar_splash(pos: Vector3, parent_node: Node) -> void:
 	splash_lbl.text = "🍯 ВСПЛЕСК!"
 	splash_lbl.font_size = 28
 	splash_lbl.outline_size = 5
-	splash_lbl.outline_color = Color(0, 0, 0, 0.9)
+	splash_lbl.outline_modulate = Color(0, 0, 0, 0.9)
 	splash_lbl.modulate = Color(1.0, 0.9, 0.2)
 	splash_lbl.billboard = BaseMaterial3D.BILLBOARD_ENABLED
 	splash_lbl.pixel_size = 0.007

@@ -246,11 +246,12 @@ func spawn_unit_into_tunnel(scene: PackedScene, lane_idx: int, cost: int, unit_t
 		return unit
 
 	# Land units follow the lane curve
-	var path = forest_map.lane_manager.get_lane_path(lane_idx)
-	if path and path.curve:
-		unit.initialize_on_lane(path.curve, lane_idx, false)
+	if forest_map and forest_map.lane_manager:
+		var path = forest_map.lane_manager.get_lane_path(lane_idx)
+		if path and path.curve:
+			unit.initialize_on_lane(path.curve, lane_idx, false)
 	
-	if lane_idx == 1 and forest_map.mid_obstacle:
+	if lane_idx == 1 and forest_map and forest_map.mid_obstacle:
 		unit.target_obstacle = forest_map.mid_obstacle
 
 	unit.unit_selected.connect(_on_unit_selected)
