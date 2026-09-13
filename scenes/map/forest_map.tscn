@@ -193,6 +193,7 @@ transform = Transform3D(0.9, 0, 0, 0, 0.9, 0, 0, 0, 0.9, 5.5, 0, 6)
 can_drop_nectar = true
 associated_lane_index = 1
 drop_target_z = 0.0
+alternate_lane_indices = [1, 2]
 stem_height = 2.0
 
 [node name="Pebbles" type="Node3D" parent="Props"]

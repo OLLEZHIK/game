@@ -1,0 +1,100 @@
+[gd_scene load_steps=9 format=3 uid="uid://u_caterpillar01"]
+
+[ext_resource type="Script" path="res://scripts/units/caterpillar.gd" id="1_ucat"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_cat_body"]
+albedo_color = Color(0.22, 0.75, 0.28, 1)
+roughness = 0.45
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_cat_belly"]
+albedo_color = Color(0.65, 0.88, 0.35, 1)
+roughness = 0.5
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_spine_glow"]
+shading_mode = 1
+albedo_color = Color(0.4, 1.0, 0.45, 1)
+
+[sub_resource type="SphereMesh" id="SphereMesh_seg"]
+material = SubResource("StandardMaterial3D_cat_body")
+radius = 0.32
+height = 0.55
+radial_segments = 10
+rings = 6
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_dorsal_spike"]
+material = SubResource("StandardMaterial3D_spine_glow")
+top_radius = 0.02
+bottom_radius = 0.12
+height = 1.05
+radial_segments = 8
+
+[sub_resource type="SphereMesh" id="SphereMesh_head"]
+material = SubResource("StandardMaterial3D_cat_belly")
+radius = 0.35
+height = 0.6
+radial_segments = 10
+rings = 6
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_cat"]
+radius = 0.7
+
+[node name="Caterpillar" type="CharacterBody3D"]
+script = ExtResource("1_ucat")
+unit_name = "Гусеница-ПВО"
+role = 4
+is_ranged = true
+max_health = 120.0
+move_speed = 2.2
+attack_damage = 12.0
+attack_cooldown = 0.5
+attack_range = 22.0
+
+[node name="Visuals" type="Node3D" parent="."]
+
+[node name="BodyMesh" type="Node3D" parent="Visuals"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.32, 0)
+
+[node name="Head" type="MeshInstance3D" parent="Visuals/BodyMesh"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.08, -0.65)
+mesh = SubResource("SphereMesh_head")
+
+[node name="Segment1" type="MeshInstance3D" parent="Visuals/BodyMesh"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.12, -0.22)
+mesh = SubResource("SphereMesh_seg")
+
+[node name="Segment2" type="MeshInstance3D" parent="Visuals/BodyMesh"]
+transform = Transform3D(1.15, 0, 0, 0, 1.25, 0, 0, 0, 1.15, 0, 0.22, 0.18)
+mesh = SubResource("SphereMesh_seg")
+
+[node name="DorsalSpine" type="MeshInstance3D" parent="Visuals/BodyMesh"]
+transform = Transform3D(1, 0, 0, 0, 0.866025, 0.5, 0, -0.5, 0.866025, 0, 0.75, 0.15)
+mesh = SubResource("CylinderMesh_dorsal_spike")
+
+[node name="SpineLight" type="OmniLight3D" parent="Visuals/BodyMesh/DorsalSpine"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+light_color = Color(0.3, 1.0, 0.4, 1)
+light_energy = 1.6
+omni_range = 1.8
+
+[node name="Segment3" type="MeshInstance3D" parent="Visuals/BodyMesh"]
+transform = Transform3D(0.9, 0, 0, 0, 0.9, 0, 0, 0, 0.9, 0, 0.05, 0.55)
+mesh = SubResource("SphereMesh_seg")
+
+[node name="Segment4" type="MeshInstance3D" parent="Visuals/BodyMesh"]
+transform = Transform3D(0.7, 0, 0, 0, 0.7, 0, 0, 0, 0.7, 0, -0.02, 0.88)
+mesh = SubResource("SphereMesh_seg")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.35, 0)
+shape = SubResource("SphereShape3D_cat")
+
+[node name="HpLabel" type="Label3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.65, 0)
+pixel_size = 0.007
+billboard = 1
+double_sided = false
+text = "Гусеница-ПВО [120/120 HP]"
+font_size = 20
+outline_size = 4
+outline_modulate = Color(0, 0, 0, 0.85)
+modulate = Color(0.4, 1, 0.5, 1)

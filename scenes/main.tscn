@@ -201,6 +201,14 @@ text = " Клоп-Стрелок (75🍯)"
 icon = ExtResource("9_istink")
 expand_icon = true
 
+[node name="BtnSpawnCaterpillar" type="Button" parent="UI/LeftPanel/ScrollContainer/MarginContainer/VBoxContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 36)
+layout_mode = 2
+focus_mode = 0
+text = " Гусеница-ПВО (90🍯)"
+expand_icon = true
+
 [node name="BugStatsPanel" type="PanelContainer" parent="UI/LeftPanel/ScrollContainer/MarginContainer/VBoxContainer"]
 unique_name_in_owner = true
 layout_mode = 2
@@ -281,6 +289,15 @@ text = " Выпустить Термита"
 icon = ExtResource("8_iterm")
 expand_icon = true
 
+[node name="BtnSpawnEnemyBee" type="Button" parent="UI/LeftPanel/ScrollContainer/MarginContainer/VBoxContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 34)
+layout_mode = 2
+focus_mode = 0
+theme_override_colors/font_color = Color(1, 0.65, 0.65, 1)
+text = " Выпустить Осу-Пчелу"
+expand_icon = true
+
 [node name="HSeparator3" type="HSeparator" parent="UI/LeftPanel/ScrollContainer/MarginContainer/VBoxContainer"]
 layout_mode = 2
 
@@ -313,7 +330,7 @@ anchor_right = 1.0
 offset_left = -330.0
 offset_top = 58.0
 offset_right = -15.0
-offset_bottom = 244.0
+offset_bottom = 265.0
 grow_horizontal = 0
 mouse_filter = 2
 
@@ -364,3 +381,8 @@ text = "• F / Клик по жуку — вид от лица (Bug-Cam)"
 layout_mode = 2
 theme_override_font_sizes/font_size = 12
 text = "• Q / E — поворот камеры (до 15°)"
+
+[node name="Guide7" type="Label" parent="UI/ControlGuide/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "• ПКМ — приказ выбранному юниту (5с контроль)"

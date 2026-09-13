@@ -103,6 +103,29 @@ const UNITS = {
 		"is_ranged": true,
 		"desc": "Дальнобойный клоп: плюется ядовитым кислотным залпом через союзника впереди!"
 	},
+	"CATERPILLAR": {
+		"title": "Гусеница-ПВО",
+		"cost": 90,
+		"max_health": 120.0,
+		"move_speed": 2.2,
+		"attack_damage": 12.0,
+		"attack_cooldown": 0.5,
+		"attack_range": 22.0,
+		"is_ranged": true,
+		"desc": "Гусеница-ПВО: стреляет длинными иглами со спины на полкарты с кд 0.5с! Сбивает вражеских пчел и термитов."
+	},
+	"ENEMY_BEE": {
+		"title": "Вражеская Пчела",
+		"cost": 0,
+		"max_health": 45.0,
+		"move_speed": 5.2,
+		"flight_height": 2.4,
+		"attack_damage": 8.0,
+		"attack_cooldown": 1.0,
+		"attack_range": 2.0,
+		"is_ranged": false,
+		"desc": "Вражеская пчелка: ворует нектар с цветков и атакует наших сборщиков в воздухе."
+	},
 	"TERMITE_SOLDIER": {
 		"title": "Термит-Воин",
 		"cost": 0,

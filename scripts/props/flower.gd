@@ -9,8 +9,21 @@ signal nectar_harvested_by_bee()
 @export var reload_time: float = 8.0
 @export var associated_lane_index: int = 2
 @export var drop_target_z: float = 12.0
+## For flowers between rows: can spit to either adjacent row (e.g. [1, 2] for mid & bot)
+@export var alternate_lane_indices: Array[int] = []
 @export var stem_height: float = 1.85 ## Height of flower stem/head. Higher stem = larger drop scatter radius!
 @export var scatter_radius_factor: float = 2.0 ## Radius multiplier per meter of stem height
+
+func get_target_lane_info() -> Dictionary:
+	var lane_idx = associated_lane_index
+	var target_z = drop_target_z
+	if alternate_lane_indices.size() > 0:
+		lane_idx = alternate_lane_indices[randi() % alternate_lane_indices.size()]
+		match lane_idx:
+			0: target_z = -12.0
+			1: target_z = 0.0
+			2: target_z = 12.0
+	return {"lane_index": lane_idx, "target_z": target_z}
 
 var has_nectar: bool = true
 var is_reloading: bool = false
@@ -118,21 +131,25 @@ func drop_nectar_onto_path() -> void:
 	nectar_timer = 0.0
 	release_bee_reservation()
 
+	var lane_info = get_target_lane_info()
+	var chosen_lane_idx: int = lane_info.lane_index
+	var chosen_target_z: float = lane_info.target_z
+
 	# 1. Random position along the lane within radius proportional to stem height
 	var scatter_rad = get_scatter_radius()
 	var rand_x = clampf(global_position.x + randf_range(-scatter_rad, scatter_rad), -4.0, 18.0)
-	var rand_z = drop_target_z + randf_range(-0.4, 0.4)
+	var rand_z = chosen_target_z + randf_range(-0.4, 0.4)
 	var raw_drop_pos = Vector3(rand_x, 0.22, rand_z)
 
 	# 2. Anti-stacking: check existing & in-flight drops so it lands adjacent without overlap ("впритык, но рядом")
 	var final_drop_pos = raw_drop_pos
 	var main_node = get_tree().root.find_child("Main", true, false)
 	if main_node and main_node.has_method("reserve_unstacked_drop_position"):
-		final_drop_pos = main_node.reserve_unstacked_drop_position(raw_drop_pos, drop_target_z)
+		final_drop_pos = main_node.reserve_unstacked_drop_position(raw_drop_pos, chosen_target_z)
 
-	_animate_spit_and_splash(final_drop_pos)
+	_animate_spit_and_splash(final_drop_pos, chosen_lane_idx)
 
-func _animate_spit_and_splash(drop_pos: Vector3) -> void:
+func _animate_spit_and_splash(drop_pos: Vector3, lane_idx: int) -> void:
 	# 1. Daisy flower squash & spring recoil ("выплёвывание")
 	var daisy_tw = create_tween()
 	
@@ -145,7 +162,7 @@ func _animate_spit_and_splash(drop_pos: Vector3) -> void:
 	# POP! Spring up and fling the droplet out
 	daisy_tw.chain().tween_callback(func():
 		_update_visuals()
-		_launch_spit_blob(drop_pos)
+		_launch_spit_blob(drop_pos, lane_idx)
 	)
 	
 	# Elastic recoil bounce
@@ -156,7 +173,7 @@ func _animate_spit_and_splash(drop_pos: Vector3) -> void:
 		daisy_tw.parallel().tween_property(petals, "scale", Vector3(0.85, 1.35, 0.85), 0.12).set_trans(Tween.TRANS_ELASTIC)
 		daisy_tw.parallel().tween_property(petals, "scale", Vector3.ONE, 0.35).set_trans(Tween.TRANS_ELASTIC)
 
-func _launch_spit_blob(target_pos: Vector3) -> void:
+func _launch_spit_blob(target_pos: Vector3, lane_idx: int) -> void:
 	var tree = get_tree()
 	if not tree:
 		return
@@ -205,9 +222,9 @@ func _launch_spit_blob(target_pos: Vector3) -> void:
 
 		# Spawn collectible drop on lane
 		if main_node and main_node.has_method("spawn_fallen_nectar_drop"):
-			main_node.spawn_fallen_nectar_drop(target_pos, associated_lane_index)
+			main_node.spawn_fallen_nectar_drop(target_pos, lane_idx)
 
-		nectar_dropped.emit(target_pos, associated_lane_index)
+		nectar_dropped.emit(target_pos, lane_idx)
 
 		# Start reload cooldown
 		_start_reload_cooldown()

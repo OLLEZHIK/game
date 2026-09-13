@@ -44,8 +44,13 @@ var march_direction: float = 1.0 # 1.0 for Allied (West -> East), -1.0 for Enemy
 
 var carried_nectar: int = 0
 var target_obstacle: LaneObstacle = null
-var target_enemy: BugUnit = null
+var target_enemy: Node3D = null
 var _attack_timer: float = 0.0
+
+# Micro-control system (5-second manual command window)
+var is_under_manual_control: bool = false
+var manual_control_timer: float = 0.0
+var manual_target_enemy: Node3D = null
 
 @onready var body_mesh: Node3D = $Visuals/BodyMesh
 @onready var hp_label: Label3D = $HpLabel
@@ -76,6 +81,14 @@ func _process(delta: float) -> void:
 
 	_walk_anim_time += delta * move_speed * 4.0
 	_attack_timer = maxf(0.0, _attack_timer - delta)
+
+	# Manual control 5s window
+	if is_under_manual_control:
+		manual_control_timer -= delta
+		if manual_control_timer <= 0.0:
+			is_under_manual_control = false
+			manual_target_enemy = null
+			_update_hp_display()
 
 	match current_state:
 		UnitState.MARCHING:
@@ -356,12 +369,36 @@ func die() -> void:
 
 func _update_hp_display() -> void:
 	if hp_label:
+		var prefix = unit_name
+		if is_under_manual_control:
+			prefix = "🎯 " + prefix
 		if carried_nectar > 0:
-			hp_label.text = "%s [%d HP]\n🍯 +%d Нектара" % [unit_name, int(current_health), carried_nectar]
+			hp_label.text = "%s [%d HP]\n🍯 +%d Нектара" % [prefix, int(current_health), carried_nectar]
 			hp_label.modulate = Color(1.0, 0.9, 0.2)
 		else:
-			hp_label.text = "%s [%d/%d HP]" % [unit_name, int(current_health), int(max_health)]
+			hp_label.text = "%s [%d/%d HP]" % [prefix, int(current_health), int(max_health)]
 			hp_label.modulate = Color(1.0, 0.35, 0.3) if is_enemy else Color(0.4, 1.0, 0.5)
+
+func order_attack_target(target: Node3D) -> void:
+	if not is_instance_valid(target):
+		return
+	is_under_manual_control = true
+	manual_control_timer = 5.0
+	manual_target_enemy = target
+	target_enemy = target
+	current_state = UnitState.FIGHTING
+	_update_hp_display()
+
+func order_move_to_position(_pos: Vector3) -> void:
+	# Ground units continually march along their lane curve, but player click acknowledges order
+	is_under_manual_control = true
+	manual_control_timer = 5.0
+	_update_hp_display()
+
+func set_manual_control(duration: float = 5.0) -> void:
+	is_under_manual_control = true
+	manual_control_timer = duration
+	_update_hp_display()
 
 func _on_input_event(_camera: Node, event: InputEvent, _event_position: Vector3, _normal: Vector3, _shape_idx: int) -> void:
 	if event is InputEventMouseButton and event.is_pressed() and event.button_index == MOUSE_BUTTON_LEFT:
