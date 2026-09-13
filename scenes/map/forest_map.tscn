@@ -161,30 +161,34 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.0, 0, 0)
 [node name="Daisies" type="Node3D" parent="Props"]
 
 [node name="Daisy1" parent="Props/Daisies" instance=ExtResource("8_pdaisy")]
-transform = Transform3D(1.2, 0, 0, 0, 1.2, 0, 0, 0, 1.2, -6, 0, 10.5)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, 16.5)
 can_drop_nectar = true
 associated_lane_index = 2
 drop_target_z = 12.0
 
 [node name="Daisy2" parent="Props/Daisies" instance=ExtResource("8_pdaisy")]
-transform = Transform3D(1.1, 0, 0, 0, 1.1, 0, 0, 0, 1.1, 8, 0, 11.5)
-can_drop_nectar = false
+transform = Transform3D(0.95, 0, 0, 0, 0.95, 0, 0, 0, 0.95, 11, 0, 16.5)
+can_drop_nectar = true
+associated_lane_index = 2
+drop_target_z = 12.0
 
 [node name="Daisy3" parent="Props/Daisies" instance=ExtResource("8_pdaisy")]
-transform = Transform3D(1.3, 0, 0, 0, 1.3, 0, 0, 0, 1.3, -8, 0, -10.5)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, -16.5)
 can_drop_nectar = true
 associated_lane_index = 0
 drop_target_z = -12.0
 
 [node name="Daisy4" parent="Props/Daisies" instance=ExtResource("8_pdaisy")]
-transform = Transform3D(1.1, 0, 0, 0, 1.1, 0, 0, 0, 1.1, 6, 0, -11)
+transform = Transform3D(0.95, 0, 0, 0, 0.95, 0, 0, 0, 0.95, 11, 0, -16.5)
 can_drop_nectar = true
 associated_lane_index = 0
 drop_target_z = -12.0
 
 [node name="Daisy5" parent="Props/Daisies" instance=ExtResource("8_pdaisy")]
-transform = Transform3D(0.95, 0, 0, 0, 0.95, 0, 0, 0, 0.95, 0, 0, 6)
-can_drop_nectar = false
+transform = Transform3D(0.9, 0, 0, 0, 0.9, 0, 0, 0, 0.9, 5.5, 0, 6)
+can_drop_nectar = true
+associated_lane_index = 1
+drop_target_z = 0.0
 
 [node name="Pebbles" type="Node3D" parent="Props"]
 

@@ -16,7 +16,7 @@ script = ExtResource("1_mscript")
 [node name="ForestMap" parent="." instance=ExtResource("2_mmap")]
 
 [node name="RTSCamera" parent="." instance=ExtResource("3_mcam")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.5, 0, 3)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 0, 3)
 
 [node name="UI" type="CanvasLayer" parent="."]
 
