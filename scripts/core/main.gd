@@ -29,7 +29,6 @@ const WOODCUTTER_BEETLE_SCENE = preload("res://scenes/units/woodcutter_beetle.ts
 # Economy resources (from docs/03_economy_and_resources.md)
 var nectar: int = 200
 var pollen: int = 40
-var active_lane_index: int = 1 # 0: Top, 1: Mid, 2: Bot
 
 @onready var label_nectar: Label = %LabelNectar
 @onready var label_pollen: Label = %LabelPollen
@@ -37,9 +36,13 @@ var active_lane_index: int = 1 # 0: Top, 1: Mid, 2: Bot
 var active_units: Array = []
 var selected_unit: Node3D = null
 
+# BugBits Deploy Mode: Select Bug -> Click Tunnel
+var deploy_bug_scene: PackedScene = null
+var deploy_bug_cost: int = 0
+var deploy_bug_name: String = ""
+
 func _ready() -> void:
 	_update_hud()
-	_update_lane_selection_ui()
 	if bug_cam_banner:
 		bug_cam_banner.visible = false
 	
@@ -50,20 +53,26 @@ func _ready() -> void:
 
 	if btn_saw_log:
 		btn_saw_log.pressed.connect(_on_btn_saw_log_pressed)
+		
+	# Direct tunnel buttons on UI
 	if btn_select_lane1:
-		btn_select_lane1.pressed.connect(func(): set_active_lane(0))
+		btn_select_lane1.pressed.connect(func(): on_tunnel_selected(0))
 	if btn_select_lane2:
-		btn_select_lane2.pressed.connect(func(): set_active_lane(1))
+		btn_select_lane2.pressed.connect(func(): on_tunnel_selected(1))
 	if btn_select_lane3:
-		btn_select_lane3.pressed.connect(func(): set_active_lane(2))
+		btn_select_lane3.pressed.connect(func(): on_tunnel_selected(2))
 
-	# Spawning into currently selected tunnel
+	# Bug selection buttons
 	if btn_spawn_worker:
-		btn_spawn_worker.pressed.connect(func(): spawn_player_unit(WORKER_ANT_SCENE, active_lane_index, 40, "Муравей-Сборщик"))
+		btn_spawn_worker.pressed.connect(func(): select_bug_for_deployment(WORKER_ANT_SCENE, 40, "Муравей-Сборщик"))
 	if btn_spawn_woodcutter:
-		btn_spawn_woodcutter.pressed.connect(func(): spawn_player_unit(WOODCUTTER_BEETLE_SCENE, active_lane_index, 60, "Жук-Лесоруб"))
+		btn_spawn_woodcutter.pressed.connect(func(): select_bug_for_deployment(WOODCUTTER_BEETLE_SCENE, 60, "Жук-Лесоруб"))
 	if btn_spawn_rhino:
-		btn_spawn_rhino.pressed.connect(func(): spawn_player_unit(RHINO_BEETLE_SCENE, active_lane_index, 85, "Танк-Носорог"))
+		btn_spawn_rhino.pressed.connect(func(): select_bug_for_deployment(RHINO_BEETLE_SCENE, 85, "Танк-Носорог"))
+
+	# Connect 3D world tunnel clicking
+	if forest_map and forest_map.allied_base:
+		forest_map.allied_base.tunnel_clicked.connect(on_tunnel_selected)
 
 	if forest_map and forest_map.mid_obstacle:
 		forest_map.mid_obstacle.obstacle_damaged.connect(_on_obstacle_damaged)
@@ -74,6 +83,11 @@ func _process(_delta: float) -> void:
 		bug_cam_banner.visible = rts_camera.is_bug_cam
 
 func _unhandled_input(event: InputEvent) -> void:
+	if event is InputEventMouseButton and event.is_pressed():
+		if event.button_index == MOUSE_BUTTON_RIGHT and deploy_bug_scene != null:
+			cancel_deployment()
+			return
+
 	if not (event is InputEventKey and event.is_pressed()):
 		return
 		
@@ -84,36 +98,78 @@ func _unhandled_input(event: InputEvent) -> void:
 	if pkey == KEY_SPACE or key == KEY_SPACE:
 		saw_mid_log()
 	elif pkey == KEY_1 or key == KEY_1 or pkey == KEY_KP_1:
-		set_active_lane(0)
+		on_tunnel_selected(0)
 	elif pkey == KEY_2 or key == KEY_2 or pkey == KEY_KP_2:
-		set_active_lane(1)
+		on_tunnel_selected(1)
 	elif pkey == KEY_3 or key == KEY_3 or pkey == KEY_KP_3:
-		set_active_lane(2)
+		on_tunnel_selected(2)
 	elif pkey == KEY_F or key == KEY_F:
 		toggle_bug_cam_on_selected()
 	elif pkey == KEY_ESCAPE or key == KEY_ESCAPE:
-		if rts_camera and rts_camera.is_bug_cam:
+		if deploy_bug_scene != null:
+			cancel_deployment()
+		elif rts_camera and rts_camera.is_bug_cam:
 			rts_camera.reset_to_overview()
 
-func set_active_lane(idx: int) -> void:
-	active_lane_index = idx
-	_update_lane_selection_ui()
-	var names = ["Туннель 1 (Северная ветка)", "Туннель 2 (Центральная ветка)", "Туннель 3 (Южная ветка)"]
-	show_notice("Выбран для отправки: %s" % names[idx], Color(0.4, 0.9, 1.0))
-
-func _update_lane_selection_ui() -> void:
-	var names = ["Ветка 1 (Север)", "Ветка 2 (Центр)", "Ветка 3 (Юг)"]
-	if label_active_lane:
-		label_active_lane.text = "🎯 Выход: %s" % names[active_lane_index]
+## 1. Step 1: Player clicks on bug icon to deploy
+func select_bug_for_deployment(scene: PackedScene, cost: int, title: String) -> void:
+	if nectar < cost:
+		show_notice("❌ Недостаточно нектара! Нужно: %d🍯 (у вас: %d🍯)" % [cost, nectar], Color(1, 0.35, 0.3))
+		return
+		
+	deploy_bug_scene = scene
+	deploy_bug_cost = cost
+	deploy_bug_name = title
 	
-	if btn_select_lane1:
-		btn_select_lane1.text = ("▶ [ 1 ] Туннель 1 (Верх)" if active_lane_index == 0 else "[ 1 ] Туннель 1 (Верх)")
-	if btn_select_lane2:
-		btn_select_lane2.text = ("▶ [ 2 ] Туннель 2 (Центр)" if active_lane_index == 1 else "[ 2 ] Туннель 2 (Центр)")
-	if btn_select_lane3:
-		btn_select_lane3.text = ("▶ [ 3 ] Туннель 3 (Низ)" if active_lane_index == 2 else "[ 3 ] Туннель 3 (Низ)")
+	if forest_map and forest_map.allied_base:
+		forest_map.allied_base.set_highlight_for_deployment(true)
+		
+	_update_bug_button_styles()
+	show_notice("👉 Выбран %s! Теперь НАЖМИТЕ НА ТУННЕЛЬ (Верхний, Средний или Нижний)" % title, Color(1.0, 0.9, 0.2))
 
-func spawn_player_unit(scene: PackedScene, lane_idx: int, cost: int, unit_title: String) -> Node3D:
+## 2. Step 2: Player clicks on tunnel in 3D world or UI or presses 1, 2, 3
+func on_tunnel_selected(lane_idx: int) -> void:
+	var lane_names = ["Верхний (1)", "Средний (2)", "Нижний (3)"]
+	
+	if deploy_bug_scene != null:
+		# Deploy the primed bug into this tunnel!
+		var spawned = spawn_unit_into_tunnel(deploy_bug_scene, lane_idx, deploy_bug_cost, deploy_bug_name)
+		if spawned:
+			# Keep primed or reset if can't afford more
+			if nectar < deploy_bug_cost:
+				cancel_deployment()
+			else:
+				show_notice("✅ %s вышел в %s туннель! (Кликните еще раз для повторной отправки)" % [deploy_bug_name, lane_names[lane_idx]], Color(0.4, 1.0, 0.5))
+	else:
+		# No bug was selected yet: inform user to pick a bug first
+		show_notice("Туннель: %s! Нажмите на иконку Муравья, Лесоруба или Танка для отправки." % lane_names[lane_idx], Color(0.5, 0.85, 1.0))
+
+func cancel_deployment() -> void:
+	deploy_bug_scene = null
+	deploy_bug_cost = 0
+	deploy_bug_name = ""
+	if forest_map and forest_map.allied_base:
+		forest_map.allied_base.set_highlight_for_deployment(false)
+	_update_bug_button_styles()
+	show_notice("Выбор отменен.", Color(0.8, 0.8, 0.8))
+
+func _update_bug_button_styles() -> void:
+	if btn_spawn_worker:
+		btn_spawn_worker.text = ("▶ 🐜 Муравей (40🍯) [ВЫБРАН]" if deploy_bug_name == "Муравей-Сборщик" else "🐜 Муравей-Сборщик (40🍯)")
+	if btn_spawn_woodcutter:
+		btn_spawn_woodcutter.text = ("▶ 🪓 Лесоруб (60🍯) [ВЫБРАН]" if deploy_bug_name == "Жук-Лесоруб" else "🪓 Жук-Лесоруб (60🍯)")
+	if btn_spawn_rhino:
+		btn_spawn_rhino.text = ("▶ 🦏 Носорог (85🍯) [ВЫБРАН]" if deploy_bug_name == "Танк-Носорог" else "🦏 Танк-Носорог (85🍯)")
+	
+	if label_active_lane:
+		if deploy_bug_name != "":
+			label_active_lane.text = "🎯 Нажмите на Туннель в мире или [1, 2, 3]!"
+			label_active_lane.modulate = Color(1.0, 0.9, 0.2)
+		else:
+			label_active_lane.text = "Кликните по жуку, затем по туннелю"
+			label_active_lane.modulate = Color(0.7, 0.7, 0.7)
+
+func spawn_unit_into_tunnel(scene: PackedScene, lane_idx: int, cost: int, unit_title: String) -> Node3D:
 	if nectar < cost:
 		show_notice("❌ Недостаточно нектара! Нужно: %d🍯 (у вас: %d🍯)" % [cost, nectar], Color(1, 0.35, 0.3))
 		return null
@@ -136,7 +192,6 @@ func spawn_player_unit(scene: PackedScene, lane_idx: int, cost: int, unit_title:
 	unit.unit_died.connect(_on_unit_died)
 	
 	select_unit(unit)
-	show_notice("✅ %s вышел из Туннеля %d!" % [unit_title, lane_idx + 1], Color(0.4, 1.0, 0.5))
 	return unit
 
 func show_notice(text: String, color: Color = Color.WHITE) -> void:
@@ -145,7 +200,7 @@ func show_notice(text: String, color: Color = Color.WHITE) -> void:
 		label_notification.modulate = color
 		label_notification.visible = true
 		var tween = create_tween()
-		tween.tween_interval(3.0)
+		tween.tween_interval(3.5)
 		tween.tween_property(label_notification, "modulate:a", 0.0, 0.5)
 		tween.tween_callback(func(): label_notification.visible = false; label_notification.modulate.a = 1.0)
 
@@ -202,4 +257,4 @@ func _update_hud() -> void:
 	if label_nectar:
 		label_nectar.text = "🍯 Нектар: %d" % nectar
 	if label_pollen:
-		label_pollen.text = "✨ Пыльца / Биомасса: %d" % pollen
+		label_pollen.text = "✨ Пыльца: %d" % pollen
