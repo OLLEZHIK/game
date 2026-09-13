@@ -1,0 +1,10 @@
+[gd_resource type="StandardMaterial3D" format=3 uid="uid://m_daisy_petal01"]
+
+[resource]
+resource_name = "MatDaisyPetal"
+albedo_color = Color(0.97, 0.97, 0.94, 1)
+roughness = 0.45
+subsurf_scatter_enabled = true
+subsurf_scatter_strength = 0.35
+rim_enabled = true
+rim = 0.3

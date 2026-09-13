@@ -1,0 +1,7 @@
+[gd_resource type="StandardMaterial3D" format=3 uid="uid://m_tunnel_in01"]
+
+[resource]
+resource_name = "MatTunnelInterior"
+albedo_color = Color(0.06, 0.04, 0.03, 1)
+roughness = 0.95
+shading_mode = 0

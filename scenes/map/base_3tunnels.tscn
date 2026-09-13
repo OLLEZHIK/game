@@ -1,0 +1,130 @@
+[gd_scene load_steps=8 format=3 uid="uid://b_base_3tunnels01"]
+
+[ext_resource type="Script" path="res://scripts/map/base_3tunnels.gd" id="1_b3t"]
+[ext_resource type="Material" uid="uid://m_anthill01" path="res://assets/materials/mat_anthill.tres" id="2_manth"]
+[ext_resource type="Material" uid="uid://m_tunnel_in01" path="res://assets/materials/mat_tunnel_interior.tres" id="3_mtun"]
+[ext_resource type="Material" uid="uid://m_bark01" path="res://assets/materials/mat_bark.tres" id="4_mbark"]
+
+[sub_resource type="SphereMesh" id="SphereMesh_mound"]
+material = ExtResource("2_manth")
+radius = 2.4
+height = 2.2
+radial_segments = 14
+rings = 6
+is_hemisphere = true
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_hole"]
+material = ExtResource("3_mtun")
+top_radius = 0.95
+bottom_radius = 1.05
+height = 1.5
+radial_segments = 10
+
+[sub_resource type="TorusMesh" id="TorusMesh_rim"]
+material = ExtResource("4_mbark")
+inner_radius = 0.9
+outer_radius = 1.3
+rings = 8
+ring_segments = 6
+
+[node name="Base3Tunnels" type="Node3D"]
+script = ExtResource("1_b3t")
+
+[node name="TunnelTop" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -12)
+
+[node name="Mound" type="MeshInstance3D" parent="TunnelTop"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+mesh = SubResource("SphereMesh_mound")
+
+[node name="Hole" type="MeshInstance3D" parent="TunnelTop"]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0.8, 0.7, 0)
+mesh = SubResource("CylinderMesh_hole")
+
+[node name="Rim" type="MeshInstance3D" parent="TunnelTop"]
+transform = Transform3D(-4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 0, 0, 1, 1.4, 0.7, 0)
+mesh = SubResource("TorusMesh_rim")
+
+[node name="MarkerTop" type="Marker3D" parent="TunnelTop"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.8, 0.2, 0)
+
+[node name="LabelTop" type="Label3D" parent="TunnelTop"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.6, 0)
+pixel_size = 0.007
+billboard = 1
+text = "Туннель 1 (Верх)"
+font_size = 28
+outline_size = 6
+outline_color = Color(0, 0, 0, 0.9)
+
+[node name="LightTop" type="OmniLight3D" parent="TunnelTop"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.0, 1.0, 0)
+light_color = Color(0.4, 1, 0.5, 1)
+light_energy = 1.2
+omni_range = 4.0
+
+[node name="TunnelMid" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+
+[node name="Mound" type="MeshInstance3D" parent="TunnelMid"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+mesh = SubResource("SphereMesh_mound")
+
+[node name="Hole" type="MeshInstance3D" parent="TunnelMid"]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0.8, 0.7, 0)
+mesh = SubResource("CylinderMesh_hole")
+
+[node name="Rim" type="MeshInstance3D" parent="TunnelMid"]
+transform = Transform3D(-4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 0, 0, 1, 1.4, 0.7, 0)
+mesh = SubResource("TorusMesh_rim")
+
+[node name="MarkerMid" type="Marker3D" parent="TunnelMid"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.8, 0.2, 0)
+
+[node name="LabelMid" type="Label3D" parent="TunnelMid"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.6, 0)
+pixel_size = 0.007
+billboard = 1
+text = "Туннель 2 (Центр)"
+font_size = 28
+outline_size = 6
+outline_color = Color(0, 0, 0, 0.9)
+
+[node name="LightMid" type="OmniLight3D" parent="TunnelMid"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.0, 1.0, 0)
+light_color = Color(0.4, 1, 0.5, 1)
+light_energy = 1.2
+omni_range = 4.0
+
+[node name="TunnelBot" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 12)
+
+[node name="Mound" type="MeshInstance3D" parent="TunnelBot"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+mesh = SubResource("SphereMesh_mound")
+
+[node name="Hole" type="MeshInstance3D" parent="TunnelBot"]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0.8, 0.7, 0)
+mesh = SubResource("CylinderMesh_hole")
+
+[node name="Rim" type="MeshInstance3D" parent="TunnelBot"]
+transform = Transform3D(-4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 0, 0, 1, 1.4, 0.7, 0)
+mesh = SubResource("TorusMesh_rim")
+
+[node name="MarkerBot" type="Marker3D" parent="TunnelBot"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.8, 0.2, 0)
+
+[node name="LabelBot" type="Label3D" parent="TunnelBot"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.6, 0)
+pixel_size = 0.007
+billboard = 1
+text = "Туннель 3 (Низ)"
+font_size = 28
+outline_size = 6
+outline_color = Color(0, 0, 0, 0.9)
+
+[node name="LightBot" type="OmniLight3D" parent="TunnelBot"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.0, 1.0, 0)
+light_color = Color(0.4, 1, 0.5, 1)
+light_energy = 1.2
+omni_range = 4.0

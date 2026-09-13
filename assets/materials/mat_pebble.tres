@@ -1,0 +1,8 @@
+[gd_resource type="StandardMaterial3D" format=3 uid="uid://m_pebble01"]
+
+[resource]
+resource_name = "MatPebble"
+albedo_color = Color(0.68, 0.60, 0.52, 1)
+roughness = 0.8
+rim_enabled = true
+rim = 0.15

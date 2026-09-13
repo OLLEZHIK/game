@@ -1,86 +1,55 @@
-[gd_scene load_steps=24 format=3 uid="uid://b_forest_map01"]
+[gd_scene load_steps=23 format=3 uid="uid://b_forest_map01"]
 
 [ext_resource type="Script" path="res://scripts/map/forest_map.gd" id="1_fmap"]
 [ext_resource type="Script" path="res://scripts/map/lane_manager.gd" id="2_lanemgr"]
-[ext_resource type="Material" uid="uid://m_moss01" path="res://assets/materials/mat_moss.tres" id="3_mmoss"]
+[ext_resource type="Material" uid="uid://m_warm_soil01" path="res://assets/materials/mat_warm_soil.tres" id="3_msoil"]
 [ext_resource type="Material" uid="uid://m_dirt01" path="res://assets/materials/mat_dirt_lane.tres" id="4_mdirt"]
 [ext_resource type="Material" uid="uid://m_bark01" path="res://assets/materials/mat_bark.tres" id="5_mbark"]
 [ext_resource type="PackedScene" uid="uid://b_log_obst01" path="res://scenes/map/obstacle_log.tscn" id="6_pobs"]
-[ext_resource type="PackedScene" uid="uid://b_hive_base01" path="res://scenes/map/base_hive.tscn" id="7_phive"]
-[ext_resource type="PackedScene" uid="uid://b_shroom01" path="res://scenes/props/mushroom.tscn" id="8_pshroom"]
+[ext_resource type="PackedScene" uid="uid://b_base_3tunnels01" path="res://scenes/map/base_3tunnels.tscn" id="7_pbases"]
+[ext_resource type="PackedScene" uid="uid://b_daisy_fl01" path="res://scenes/props/daisy_flower.tscn" id="8_pdaisy"]
 [ext_resource type="PackedScene" uid="uid://b_grass01" path="res://scenes/props/grass_tuft.tscn" id="9_pgrass"]
-[ext_resource type="PackedScene" uid="uid://b_nectar_fl01" path="res://scenes/props/flower_nectar.tscn" id="10_pnectar"]
+[ext_resource type="PackedScene" uid="uid://b_pebble_cl01" path="res://scenes/props/pebble_cluster.tscn" id="10_ppeb"]
 
 [sub_resource type="PlaneMesh" id="PlaneMesh_ground"]
-material = ExtResource("3_mmoss")
-size = Vector2(80, 50)
-subdivide_width = 16
-subdivide_depth = 12
+material = ExtResource("3_msoil")
+size = Vector2(72, 44)
+subdivide_width = 12
+subdivide_depth = 8
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_ground"]
-size = Vector3(85, 2, 55)
+size = Vector3(75, 2, 48)
 
 [sub_resource type="Curve3D" id="Curve3D_top"]
 _data = {
-"points": PackedVector3Array(-4, 0, 4, 4, 0, -4, -24, 0.2, -2, -4, 0, 0, 4, 0, 0, 0, 0.2, -14, -4, 0, -4, 4, 0, 4, 24, 0.2, -2),
+"points": PackedVector3Array(0, 0, 0, 0, 0, 0, -6.0, 0.2, -12, 0, 0, 0, 0, 0, 0, 7.0, 0.2, -12, 0, 0, 0, 0, 0, 0, 20.0, 0.2, -12),
 "tilts": PackedFloat32Array(0, 0, 0)
 }
 point_count = 3
 
 [sub_resource type="Curve3D" id="Curve3D_mid"]
 _data = {
-"points": PackedVector3Array(0, 0, 0, 0, 0, 0, -24, 0.2, 0, 0, 0, 0, 0, 0, 0, 0, 0.2, 0, 0, 0, 0, 0, 0, 0, 24, 0.2, 0),
+"points": PackedVector3Array(0, 0, 0, 0, 0, 0, -6.0, 0.2, 0, 0, 0, 0, 0, 0, 0, 7.0, 0.2, 0, 0, 0, 0, 0, 0, 0, 20.0, 0.2, 0),
 "tilts": PackedFloat32Array(0, 0, 0)
 }
 point_count = 3
 
 [sub_resource type="Curve3D" id="Curve3D_bot"]
 _data = {
-"points": PackedVector3Array(-4, 0, -4, 4, 0, 4, -24, 0.2, 2, -4, 0, 0, 4, 0, 0, 0, 0.2, 14, -4, 0, 4, 4, 0, -4, 24, 0.2, 2),
+"points": PackedVector3Array(0, 0, 0, 0, 0, 0, -6.0, 0.2, 12, 0, 0, 0, 0, 0, 0, 7.0, 0.2, 12, 0, 0, 0, 0, 0, 0, 20.0, 0.2, 12),
 "tilts": PackedFloat32Array(0, 0, 0)
 }
 point_count = 3
 
-[sub_resource type="BoxMesh" id="BoxMesh_dirt_segment"]
+[sub_resource type="BoxMesh" id="BoxMesh_dirt_lane"]
 material = ExtResource("4_mdirt")
-size = Vector3(50, 0.05, 3.2)
-
-[sub_resource type="BoxMesh" id="BoxMesh_top_lane_mid"]
-material = ExtResource("4_mdirt")
-size = Vector3(26, 0.05, 3.2)
-
-[sub_resource type="CylinderMesh" id="CylinderMesh_giant_tree"]
-material = ExtResource("5_mbark")
-top_radius = 3.5
-bottom_radius = 4.5
-height = 28.0
-radial_segments = 16
-
-[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_spores"]
-emission_shape = 3
-emission_box_extents = Vector3(36, 6, 22)
-gravity = Vector3(0.02, 0.08, -0.04)
-scale_min = 0.06
-scale_max = 0.16
-color = Color(1, 0.95, 0.65, 0.8)
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_spore_mat"]
-transparency = 1
-shading_mode = 0
-albedo_color = Color(1, 0.92, 0.6, 0.85)
-
-[sub_resource type="SphereMesh" id="SphereMesh_spore"]
-material = SubResource("StandardMaterial3D_spore_mat")
-radius = 0.1
-height = 0.2
-radial_segments = 6
-rings = 4
+size = Vector3(36, 0.04, 3.4)
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_forest"]
-sky_top_color = Color(0.38, 0.64, 0.88, 1)
-sky_horizon_color = Color(0.72, 0.82, 0.78, 1)
-ground_bottom_color = Color(0.18, 0.24, 0.16, 1)
-ground_horizon_color = Color(0.45, 0.52, 0.40, 1)
+sky_top_color = Color(0.42, 0.68, 0.90, 1)
+sky_horizon_color = Color(0.80, 0.85, 0.78, 1)
+ground_bottom_color = Color(0.24, 0.18, 0.12, 1)
+ground_horizon_color = Color(0.62, 0.52, 0.38, 1)
 
 [sub_resource type="Sky" id="Sky_forest"]
 sky_material = SubResource("ProceduralSkyMaterial_forest")
@@ -89,15 +58,34 @@ sky_material = SubResource("ProceduralSkyMaterial_forest")
 background_mode = 2
 sky = SubResource("Sky_forest")
 ambient_light_source = 2
-ambient_light_color = Color(0.55, 0.62, 0.52, 1)
-ambient_light_energy = 0.85
+ambient_light_color = Color(0.72, 0.62, 0.48, 1)
+ambient_light_energy = 0.8
 tonemap_mode = 2
-tonemap_exposure = 1.15
+tonemap_exposure = 1.12
 glow_enabled = true
-glow_intensity = 0.6
-glow_bloom = 0.1
+glow_intensity = 0.5
+glow_bloom = 0.12
 fog_enabled = false
-volumetric_fog_enabled = false
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_spores"]
+emission_shape = 3
+emission_box_extents = Vector3(32, 4, 18)
+gravity = Vector3(0.01, 0.05, -0.02)
+scale_min = 0.08
+scale_max = 0.18
+color = Color(1, 0.88, 0.35, 0.85)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_spore_mat"]
+transparency = 1
+shading_mode = 0
+albedo_color = Color(1, 0.88, 0.3, 0.9)
+
+[sub_resource type="SphereMesh" id="SphereMesh_spore"]
+material = SubResource("StandardMaterial3D_spore_mat")
+radius = 0.1
+height = 0.2
+radial_segments = 6
+rings = 4
 
 [node name="ForestMap" type="Node3D"]
 script = ExtResource("1_fmap")
@@ -106,12 +94,12 @@ script = ExtResource("1_fmap")
 environment = SubResource("Environment_forest")
 
 [node name="Sunlight" type="DirectionalLight3D" parent="."]
-transform = Transform3D(0.866025, -0.353553, 0.353553, 0, 0.707107, 0.707107, -0.5, -0.612372, 0.612372, 0, 18, 0)
-light_color = Color(1, 0.94, 0.84, 1)
-light_energy = 1.25
+transform = Transform3D(0.866025, -0.433013, 0.25, 0, 0.5, 0.866025, -0.5, -0.75, 0.433013, 0, 22, 0)
+light_color = Color(1, 0.96, 0.88, 1)
+light_energy = 1.35
 shadow_enabled = true
-shadow_bias = 0.04
-directional_shadow_max_distance = 90.0
+shadow_bias = 0.03
+directional_shadow_max_distance = 70.0
 
 [node name="Terrain" type="Node3D" parent="."]
 
@@ -141,140 +129,95 @@ curve = SubResource("Curve3D_bot")
 
 [node name="LaneVisuals" type="Node3D" parent="."]
 
+[node name="TopLaneDirt" type="MeshInstance3D" parent="LaneVisuals"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.0, 0.02, -12)
+mesh = SubResource("BoxMesh_dirt_lane")
+
 [node name="MidLaneDirt" type="MeshInstance3D" parent="LaneVisuals"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.03, 0)
-mesh = SubResource("BoxMesh_dirt_segment")
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.0, 0.02, 0)
+mesh = SubResource("BoxMesh_dirt_lane")
 
-[node name="TopLaneDirt_W" type="MeshInstance3D" parent="LaneVisuals"]
-transform = Transform3D(0.866025, 0, 0.5, 0, 1, 0, -0.5, 0, 0.866025, -12, 0.03, -8)
-mesh = SubResource("BoxMesh_top_lane_mid")
-
-[node name="TopLaneDirt_E" type="MeshInstance3D" parent="LaneVisuals"]
-transform = Transform3D(0.866025, 0, -0.5, 0, 1, 0, 0.5, 0, 0.866025, 12, 0.03, -8)
-mesh = SubResource("BoxMesh_top_lane_mid")
-
-[node name="TopLaneDirt_Center" type="MeshInstance3D" parent="LaneVisuals"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.03, -14)
-mesh = SubResource("BoxMesh_top_lane_mid")
-
-[node name="BotLaneDirt_W" type="MeshInstance3D" parent="LaneVisuals"]
-transform = Transform3D(0.866025, 0, -0.5, 0, 1, 0, 0.5, 0, 0.866025, -12, 0.03, 8)
-mesh = SubResource("BoxMesh_top_lane_mid")
-
-[node name="BotLaneDirt_E" type="MeshInstance3D" parent="LaneVisuals"]
-transform = Transform3D(0.866025, 0, 0.5, 0, 1, 0, -0.5, 0, 0.866025, 12, 0.03, 8)
-mesh = SubResource("BoxMesh_top_lane_mid")
-
-[node name="BotLaneDirt_Center" type="MeshInstance3D" parent="LaneVisuals"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.03, 14)
-mesh = SubResource("BoxMesh_top_lane_mid")
+[node name="BotLaneDirt" type="MeshInstance3D" parent="LaneVisuals"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.0, 0.02, 12)
+mesh = SubResource("BoxMesh_dirt_lane")
 
 [node name="Bases" type="Node3D" parent="."]
 
-[node name="AlliedHive" parent="Bases" instance=ExtResource("7_phive")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -26, 0, 0)
-base_name = "Улей Муравьев (База)"
+[node name="AlliedBase" parent="Bases" instance=ExtResource("7_pbases")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.5, 0, 0)
 
-[node name="EnemyHive" parent="Bases" instance=ExtResource("7_phive")]
-transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 26, 0, 0)
+[node name="EnemyBase" parent="Bases" instance=ExtResource("7_pbases")]
+transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 21.5, 0, 0)
 is_enemy = true
-base_name = "Гнездо Термитов (Враг)"
+base_name = "Гнездо Врагов"
 
 [node name="Obstacles" type="Node3D" parent="."]
 
 [node name="ObstacleLog" parent="Obstacles" instance=ExtResource("6_pobs")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.0, 0, 0)
 
 [node name="Props" type="Node3D" parent="."]
 
-[node name="GiantTreeNW" type="MeshInstance3D" parent="Props"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -28, 12, -22)
-mesh = SubResource("CylinderMesh_giant_tree")
+[node name="Daisies" type="Node3D" parent="Props"]
 
-[node name="GiantTreeNE" type="MeshInstance3D" parent="Props"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 28, 12, -22)
-mesh = SubResource("CylinderMesh_giant_tree")
+[node name="Daisy1" parent="Props/Daisies" instance=ExtResource("8_pdaisy")]
+transform = Transform3D(1.2, 0, 0, 0, 1.2, 0, 0, 0, 1.2, -6, 0, 10.5)
 
-[node name="GiantTreeSW" type="MeshInstance3D" parent="Props"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -28, 12, 22)
-mesh = SubResource("CylinderMesh_giant_tree")
+[node name="Daisy2" parent="Props/Daisies" instance=ExtResource("8_pdaisy")]
+transform = Transform3D(1.1, 0, 0, 0, 1.1, 0, 0, 0, 1.1, 8, 0, 11.5)
 
-[node name="GiantTreeSE" type="MeshInstance3D" parent="Props"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 28, 12, 22)
-mesh = SubResource("CylinderMesh_giant_tree")
+[node name="Daisy3" parent="Props/Daisies" instance=ExtResource("8_pdaisy")]
+transform = Transform3D(1.3, 0, 0, 0, 1.3, 0, 0, 0, 1.3, -8, 0, -10.5)
 
-[node name="GiantTreeNorth" type="MeshInstance3D" parent="Props"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 12, -24)
-mesh = SubResource("CylinderMesh_giant_tree")
+[node name="Daisy4" parent="Props/Daisies" instance=ExtResource("8_pdaisy")]
+transform = Transform3D(1.1, 0, 0, 0, 1.1, 0, 0, 0, 1.1, 6, 0, -11)
 
-[node name="GiantTreeSouth" type="MeshInstance3D" parent="Props"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 12, 24)
-mesh = SubResource("CylinderMesh_giant_tree")
+[node name="Daisy5" parent="Props/Daisies" instance=ExtResource("8_pdaisy")]
+transform = Transform3D(0.95, 0, 0, 0, 0.95, 0, 0, 0, 0.95, 0, 0, 6)
 
-[node name="MushroomGrove" type="Node3D" parent="Props"]
+[node name="Pebbles" type="Node3D" parent="Props"]
 
-[node name="Shroom1" parent="Props/MushroomGrove" instance=ExtResource("8_pshroom")]
-transform = Transform3D(1.3, 0, 0, 0, 1.3, 0, 0, 0, 1.3, -6, 0, -18)
+[node name="Pebble1" parent="Props/Pebbles" instance=ExtResource("10_ppeb")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12, 0, -5)
 
-[node name="Shroom2" parent="Props/MushroomGrove" instance=ExtResource("8_pshroom")]
-transform = Transform3D(0.9, 0, 0, 0, 0.9, 0, 0, 0, 0.9, -4, 0, -19)
+[node name="Pebble2" parent="Props/Pebbles" instance=ExtResource("10_ppeb")]
+transform = Transform3D(1.2, 0, 0, 0, 1.2, 0, 0, 0, 1.2, -3, 0, -6)
 
-[node name="Shroom3" parent="Props/MushroomGrove" instance=ExtResource("8_pshroom")]
-transform = Transform3D(1.1, 0, 0, 0, 1.1, 0, 0, 0, 1.1, 8, 0, -18)
+[node name="Pebble3" parent="Props/Pebbles" instance=ExtResource("10_ppeb")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 0, -5.5)
 
-[node name="Shroom4" parent="Props/MushroomGrove" instance=ExtResource("8_pshroom")]
-transform = Transform3D(1.4, 0, 0, 0, 1.4, 0, 0, 0, 1.4, 18, 0, -14)
+[node name="Pebble4" parent="Props/Pebbles" instance=ExtResource("10_ppeb")]
+transform = Transform3D(1.3, 0, 0, 0, 1.3, 0, 0, 0, 1.3, -10, 0, 5)
 
-[node name="Shroom5" parent="Props/MushroomGrove" instance=ExtResource("8_pshroom")]
-transform = Transform3D(0.8, 0, 0, 0, 0.8, 0, 0, 0, 0.8, -18, 0, -14)
+[node name="Pebble5" parent="Props/Pebbles" instance=ExtResource("10_ppeb")]
+transform = Transform3D(1.1, 0, 0, 0, 1.1, 0, 0, 0, 1.1, 4, 0, 5.5)
 
-[node name="NectarGlade" type="Node3D" parent="Props"]
+[node name="Pebble6" parent="Props/Pebbles" instance=ExtResource("10_ppeb")]
+transform = Transform3D(1.2, 0, 0, 0, 1.2, 0, 0, 0, 1.2, 12, 0, 5)
 
-[node name="Flower1" parent="Props/NectarGlade" instance=ExtResource("10_pnectar")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 0, 18)
+[node name="Grass" type="Node3D" parent="Props"]
 
-[node name="Flower2" parent="Props/NectarGlade" instance=ExtResource("10_pnectar")]
-transform = Transform3D(0.85, 0, 0, 0, 0.85, 0, 0, 0, 0.85, 4, 0, 19)
+[node name="Grass1" parent="Props/Grass" instance=ExtResource("9_pgrass")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -14, 0, -6)
 
-[node name="Flower3" parent="Props/NectarGlade" instance=ExtResource("10_pnectar")]
-transform = Transform3D(0.9, 0, 0, 0, 0.9, 0, 0, 0, 0.9, 0, 0, 15)
+[node name="Grass2" parent="Props/Grass" instance=ExtResource("9_pgrass")]
+transform = Transform3D(1.2, 0, 0, 0, 1.2, 0, 0, 0, 1.2, 2, 0, -6)
 
-[node name="GrassBorders" type="Node3D" parent="Props"]
+[node name="Grass3" parent="Props/Grass" instance=ExtResource("9_pgrass")]
+transform = Transform3D(1.3, 0, 0, 0, 1.3, 0, 0, 0, 1.3, 14, 0, -6)
 
-[node name="Grass1" parent="Props/GrassBorders" instance=ExtResource("9_pgrass")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10, 0, -4)
+[node name="Grass4" parent="Props/Grass" instance=ExtResource("9_pgrass")]
+transform = Transform3D(1.1, 0, 0, 0, 1.1, 0, 0, 0, 1.1, -14, 0, 6)
 
-[node name="Grass2" parent="Props/GrassBorders" instance=ExtResource("9_pgrass")]
-transform = Transform3D(1.2, 0, 0, 0, 1.2, 0, 0, 0, 1.2, -6, 0, -4.5)
+[node name="Grass5" parent="Props/Grass" instance=ExtResource("9_pgrass")]
+transform = Transform3D(1.2, 0, 0, 0, 1.2, 0, 0, 0, 1.2, 2, 0, 6)
 
-[node name="Grass3" parent="Props/GrassBorders" instance=ExtResource("9_pgrass")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 0, -4.5)
+[node name="Grass6" parent="Props/Grass" instance=ExtResource("9_pgrass")]
+transform = Transform3D(1.3, 0, 0, 0, 1.3, 0, 0, 0, 1.3, 14, 0, 6)
 
-[node name="Grass4" parent="Props/GrassBorders" instance=ExtResource("9_pgrass")]
-transform = Transform3D(1.3, 0, 0, 0, 1.3, 0, 0, 0, 1.3, 10, 0, -4)
-
-[node name="Grass5" parent="Props/GrassBorders" instance=ExtResource("9_pgrass")]
-transform = Transform3D(1.1, 0, 0, 0, 1.1, 0, 0, 0, 1.1, -10, 0, 4)
-
-[node name="Grass6" parent="Props/GrassBorders" instance=ExtResource("9_pgrass")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 0, 4.5)
-
-[node name="Grass7" parent="Props/GrassBorders" instance=ExtResource("9_pgrass")]
-transform = Transform3D(1.2, 0, 0, 0, 1.2, 0, 0, 0, 1.2, 6, 0, 4.5)
-
-[node name="Grass8" parent="Props/GrassBorders" instance=ExtResource("9_pgrass")]
-transform = Transform3D(1.3, 0, 0, 0, 1.3, 0, 0, 0, 1.3, 10, 0, 4)
-
-[node name="Grass9" parent="Props/GrassBorders" instance=ExtResource("9_pgrass")]
-transform = Transform3D(1.4, 0, 0, 0, 1.4, 0, 0, 0, 1.4, -14, 0, 0)
-
-[node name="Grass10" parent="Props/GrassBorders" instance=ExtResource("9_pgrass")]
-transform = Transform3D(1.4, 0, 0, 0, 1.4, 0, 0, 0, 1.4, 14, 0, 0)
-
-[node name="PollenSpores" type="GPUParticles3D" parent="."]
+[node name="PollenParticles" type="GPUParticles3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, 0)
-amount = 120
-lifetime = 6.0
-preprocess = 2.0
+amount = 80
+lifetime = 5.0
 process_material = SubResource("ParticleProcessMaterial_spores")
 draw_pass_1 = SubResource("SphereMesh_spore")

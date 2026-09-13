@@ -1,0 +1,9 @@
+[gd_resource type="StandardMaterial3D" format=3 uid="uid://m_warm_soil01"]
+
+[resource]
+resource_name = "MatWarmSoil"
+albedo_color = Color(0.72, 0.46, 0.25, 1)
+roughness = 0.88
+rim_enabled = true
+rim = 0.15
+rim_tint = 0.3

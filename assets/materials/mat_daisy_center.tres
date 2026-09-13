@@ -1,0 +1,11 @@
+[gd_resource type="StandardMaterial3D" format=3 uid="uid://m_daisy_center01"]
+
+[resource]
+resource_name = "MatDaisyCenter"
+albedo_color = Color(1.0, 0.76, 0.10, 1)
+roughness = 0.55
+emission_enabled = true
+emission = Color(0.9, 0.55, 0.05, 1)
+emission_energy_multiplier = 0.4
+clearcoat_enabled = true
+clearcoat = 0.6
