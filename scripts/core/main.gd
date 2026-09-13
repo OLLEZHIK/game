@@ -5,6 +5,8 @@ const BugUnitScript = preload("res://scripts/units/bug_unit.gd")
 const WORKER_ANT_SCENE = preload("res://scenes/units/worker_ant.tscn")
 const RHINO_BEETLE_SCENE = preload("res://scenes/units/rhino_beetle.tscn")
 const WOODCUTTER_BEETLE_SCENE = preload("res://scenes/units/woodcutter_beetle.tscn")
+const FLYING_BEE_SCENE = preload("res://scenes/units/flying_bee.tscn")
+const TERMITE_SOLDIER_SCENE = preload("res://scenes/units/termite_soldier.tscn")
 
 @onready var forest_map: ForestMap = $ForestMap
 @onready var rts_camera: RTSCamera = $RTSCamera
@@ -19,8 +21,11 @@ const WOODCUTTER_BEETLE_SCENE = preload("res://scenes/units/woodcutter_beetle.ts
 
 # Spawn buttons
 @onready var btn_spawn_worker: Button = %BtnSpawnWorker
+@onready var btn_spawn_bee: Button = %BtnSpawnBee if has_node("%BtnSpawnBee") else null
 @onready var btn_spawn_woodcutter: Button = %BtnSpawnWoodcutter
 @onready var btn_spawn_rhino: Button = %BtnSpawnRhino
+@onready var btn_spawn_enemy: Button = %BtnSpawnEnemy if has_node("%BtnSpawnEnemy") else null
+@onready var label_wave_status: Label = %LabelWaveStatus if has_node("%LabelWaveStatus") else null
 @onready var label_selected_bug: Label = %LabelSelectedBug
 @onready var bug_cam_banner: PanelContainer = %BugCamBanner
 @onready var label_notification: Label = %LabelNotification if has_node("%LabelNotification") else null
@@ -30,13 +35,17 @@ const WOODCUTTER_BEETLE_SCENE = preload("res://scenes/units/woodcutter_beetle.ts
 var nectar: int = 200
 var pollen: int = 40
 
+# Enemy waves
+var enemy_wave_timer: float = 8.0
+var enemy_wave_interval: float = 15.0
+
 @onready var label_nectar: Label = %LabelNectar
 @onready var label_pollen: Label = %LabelPollen
 
 var active_units: Array = []
 var selected_unit: Node3D = null
 
-# BugBits Deploy Mode: Select Bug -> Click Tunnel
+# BugBits Deploy Mode: Select Bug -> Click Tunnel or Lane
 var deploy_bug_scene: PackedScene = null
 var deploy_bug_cost: int = 0
 var deploy_bug_name: String = ""
@@ -47,7 +56,9 @@ func _ready() -> void:
 		bug_cam_banner.visible = false
 	
 	# Prevent buttons from stealing keyboard focus
-	for btn in [btn_saw_log, btn_select_lane1, btn_select_lane2, btn_select_lane3, btn_spawn_worker, btn_spawn_woodcutter, btn_spawn_rhino]:
+	var all_btns = [btn_saw_log, btn_select_lane1, btn_select_lane2, btn_select_lane3, 
+		btn_spawn_worker, btn_spawn_bee, btn_spawn_woodcutter, btn_spawn_rhino, btn_spawn_enemy]
+	for btn in all_btns:
 		if btn:
 			btn.focus_mode = Control.FOCUS_NONE
 
@@ -65,22 +76,40 @@ func _ready() -> void:
 	# Bug selection buttons
 	if btn_spawn_worker:
 		btn_spawn_worker.pressed.connect(func(): select_bug_for_deployment(WORKER_ANT_SCENE, 40, "Муравей-Сборщик"))
+	if btn_spawn_bee:
+		btn_spawn_bee.pressed.connect(func(): select_bug_for_deployment(FLYING_BEE_SCENE, 50, "Летающая Пчелка"))
 	if btn_spawn_woodcutter:
 		btn_spawn_woodcutter.pressed.connect(func(): select_bug_for_deployment(WOODCUTTER_BEETLE_SCENE, 60, "Жук-Лесоруб"))
 	if btn_spawn_rhino:
 		btn_spawn_rhino.pressed.connect(func(): select_bug_for_deployment(RHINO_BEETLE_SCENE, 85, "Танк-Носорог"))
 
-	# Connect 3D world tunnel clicking
-	if forest_map and forest_map.allied_base:
-		forest_map.allied_base.tunnel_clicked.connect(on_tunnel_selected)
+	# Enemy manual trigger button
+	if btn_spawn_enemy:
+		btn_spawn_enemy.pressed.connect(func(): spawn_enemy_wave(randi() % 3))
+
+	# Connect 3D world tunnel and lane clicking
+	if forest_map:
+		if forest_map.allied_base:
+			forest_map.allied_base.tunnel_clicked.connect(on_tunnel_selected)
+		if forest_map.has_signal("lane_clicked"):
+			forest_map.lane_clicked.connect(on_tunnel_selected)
 
 	if forest_map and forest_map.mid_obstacle:
 		forest_map.mid_obstacle.obstacle_damaged.connect(_on_obstacle_damaged)
 		forest_map.mid_obstacle.obstacle_cleared.connect(_on_obstacle_cleared)
 
-func _process(_delta: float) -> void:
+func _process(delta: float) -> void:
 	if rts_camera and bug_cam_banner:
 		bug_cam_banner.visible = rts_camera.is_bug_cam
+
+	# Enemy wave timer
+	enemy_wave_timer -= delta
+	if label_wave_status:
+		label_wave_status.text = "Волна термитов: %d с" % max(0, int(ceil(enemy_wave_timer)))
+	if enemy_wave_timer <= 0.0:
+		enemy_wave_timer = enemy_wave_interval
+		var random_lane = randi() % 3
+		spawn_enemy_wave(random_lane)
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton and event.is_pressed():
@@ -125,24 +154,22 @@ func select_bug_for_deployment(scene: PackedScene, cost: int, title: String) -> 
 		forest_map.allied_base.set_highlight_for_deployment(true)
 		
 	_update_bug_button_styles()
-	show_notice("👉 Выбран %s! Теперь НАЖМИТЕ НА ТУННЕЛЬ (Верхний, Средний или Нижний)" % title, Color(1.0, 0.9, 0.2))
+	show_notice("👉 Выбран: %s! Кликните на ЛИНИЮ или туннель" % title, Color(1.0, 0.9, 0.2))
 
-## 2. Step 2: Player clicks on tunnel in 3D world or UI or presses 1, 2, 3
+## 2. Step 2: Player clicks on tunnel in 3D world, lane strip, or UI
 func on_tunnel_selected(lane_idx: int) -> void:
 	var lane_names = ["Верхний (1)", "Средний (2)", "Нижний (3)"]
 	
 	if deploy_bug_scene != null:
-		# Deploy the primed bug into this tunnel!
+		# Deploy the primed bug into this tunnel/lane!
 		var spawned = spawn_unit_into_tunnel(deploy_bug_scene, lane_idx, deploy_bug_cost, deploy_bug_name)
 		if spawned:
-			# Keep primed or reset if can't afford more
 			if nectar < deploy_bug_cost:
 				cancel_deployment()
 			else:
-				show_notice("✅ %s вышел в %s туннель! (Кликните еще раз для повторной отправки)" % [deploy_bug_name, lane_names[lane_idx]], Color(0.4, 1.0, 0.5))
+				show_notice("✅ %s отправлен на ветку %s!" % [deploy_bug_name, lane_names[lane_idx]], Color(0.4, 1.0, 0.5))
 	else:
-		# No bug was selected yet: inform user to pick a bug first
-		show_notice("Туннель: %s! Нажмите на иконку Муравья, Лесоруба или Танка для отправки." % lane_names[lane_idx], Color(0.5, 0.85, 1.0))
+		show_notice("Выбрана ветка: %s! Нажмите на жука слева для отправки." % lane_names[lane_idx], Color(0.5, 0.85, 1.0))
 
 func cancel_deployment() -> void:
 	deploy_bug_scene = null
@@ -155,18 +182,20 @@ func cancel_deployment() -> void:
 
 func _update_bug_button_styles() -> void:
 	if btn_spawn_worker:
-		btn_spawn_worker.text = ("▶ 🐜 Муравей (40🍯) [ВЫБРАН]" if deploy_bug_name == "Муравей-Сборщик" else "🐜 Муравей-Сборщик (40🍯)")
+		btn_spawn_worker.text = ("▶ Муравей (40🍯) [ВЫБРАН]" if deploy_bug_name == "Муравей-Сборщик" else " Муравей-Сборщик (40🍯)")
+	if btn_spawn_bee:
+		btn_spawn_bee.text = ("▶ Пчелка (50🍯) [ВЫБРАНА]" if deploy_bug_name == "Летающая Пчелка" else " Летающая Пчелка (50🍯)")
 	if btn_spawn_woodcutter:
-		btn_spawn_woodcutter.text = ("▶ 🪓 Лесоруб (60🍯) [ВЫБРАН]" if deploy_bug_name == "Жук-Лесоруб" else "🪓 Жук-Лесоруб (60🍯)")
+		btn_spawn_woodcutter.text = ("▶ Лесоруб (60🍯) [ВЫБРАН]" if deploy_bug_name == "Жук-Лесоруб" else " Жук-Лесоруб (60🍯)")
 	if btn_spawn_rhino:
-		btn_spawn_rhino.text = ("▶ 🦏 Носорог (85🍯) [ВЫБРАН]" if deploy_bug_name == "Танк-Носорог" else "🦏 Танк-Носорог (85🍯)")
+		btn_spawn_rhino.text = ("▶ Носорог (85🍯) [ВЫБРАН]" if deploy_bug_name == "Танк-Носорог" else " Танк-Носорог (85🍯)")
 	
 	if label_active_lane:
 		if deploy_bug_name != "":
-			label_active_lane.text = "🎯 Нажмите на Туннель в мире или [1, 2, 3]!"
+			label_active_lane.text = "🎯 Кликните на ЛИНИЮ или туннель!"
 			label_active_lane.modulate = Color(1.0, 0.9, 0.2)
 		else:
-			label_active_lane.text = "Кликните по жуку, затем по туннелю"
+			label_active_lane.text = "Кликните по жуку, затем по линии"
 			label_active_lane.modulate = Color(0.7, 0.7, 0.7)
 
 func spawn_unit_into_tunnel(scene: PackedScene, lane_idx: int, cost: int, unit_title: String) -> Node3D:
@@ -181,6 +210,17 @@ func spawn_unit_into_tunnel(scene: PackedScene, lane_idx: int, cost: int, unit_t
 	add_child(unit)
 	active_units.append(unit)
 
+	# Special handling for Air class (Flying Bee)
+	if scene == FLYING_BEE_SCENE or unit.has_method("initialize_bee"):
+		var spawn_pos = Vector3(-7.5, 2.4, (lane_idx - 1) * 6.0)
+		unit.initialize_bee(spawn_pos, Vector3(-7.5, 0.0, 0.0))
+		unit.unit_selected.connect(_on_unit_selected)
+		unit.unit_died.connect(_on_unit_died)
+		select_unit(unit)
+		show_notice("🐝 Пчелка взлетела! Летает по всей арене и собирает мед.", Color(1.0, 0.9, 0.2))
+		return unit
+
+	# Land units follow the lane curve
 	var path = forest_map.lane_manager.get_lane_path(lane_idx)
 	if path and path.curve:
 		unit.initialize_on_lane(path.curve, lane_idx, false)
@@ -193,6 +233,24 @@ func spawn_unit_into_tunnel(scene: PackedScene, lane_idx: int, cost: int, unit_t
 	
 	select_unit(unit)
 	return unit
+
+## Spawns an opposing enemy termite wave
+func spawn_enemy_wave(lane_idx: int) -> void:
+	if not forest_map or not forest_map.lane_manager:
+		return
+	var enemy = TERMITE_SOLDIER_SCENE.instantiate()
+	add_child(enemy)
+	active_units.append(enemy)
+
+	var path = forest_map.lane_manager.get_lane_path(lane_idx)
+	if path and path.curve:
+		enemy.initialize_on_lane(path.curve, lane_idx, true)
+
+	enemy.unit_selected.connect(_on_unit_selected)
+	enemy.unit_died.connect(_on_unit_died)
+
+	var lane_names = ["Верхней (1)", "Средней (2)", "Нижней (3)"]
+	show_notice("⚠️ Термит-Воин вышел на %s линии!" % lane_names[lane_idx], Color(1.0, 0.4, 0.3))
 
 func show_notice(text: String, color: Color = Color.WHITE) -> void:
 	if label_notification:

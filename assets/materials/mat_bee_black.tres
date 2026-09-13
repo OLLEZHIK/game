@@ -1,0 +1,8 @@
+[gd_resource type="StandardMaterial3D" format=3 uid="uid://m_bee_black01"]
+
+[resource]
+resource_name = "MatBeeBlack"
+albedo_color = Color(0.12, 0.10, 0.09, 1)
+roughness = 0.7
+rim_enabled = true
+rim = 0.3

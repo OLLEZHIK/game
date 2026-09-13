@@ -6,12 +6,13 @@
 script = ExtResource("1_cam01")
 
 [node name="Elevation" type="Node3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 0.406737, 0.913545, 0, -0.913545, 0.406737, 0, 0, 0)
+transform = Transform3D(1, 0, 0, 0, 0.669131, 0.743145, 0, -0.743145, 0.669131, 0, 0, 0)
 
 [node name="Camera3D" type="Camera3D" parent="Elevation"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 30)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 36)
 current = true
 fov = 48.0
-size = 20.0
+size = 22.0
 near = 0.5
-far = 160.0
+far = 180.0
+

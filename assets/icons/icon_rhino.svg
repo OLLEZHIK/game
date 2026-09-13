@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <defs>
+    <radialGradient id="bg_rhino" cx="50%" cy="40%" r="60%">
+      <stop offset="0%" stop-color="#90caf9"/>
+      <stop offset="100%" stop-color="#1565c0"/>
+    </radialGradient>
+    <radialGradient id="chitin_rhino" cx="40%" cy="30%" r="70%">
+      <stop offset="0%" stop-color="#424242"/>
+      <stop offset="100%" stop-color="#111111"/>
+    </radialGradient>
+    <linearGradient id="horn_grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#78909c"/>
+      <stop offset="100%" stop-color="#263238"/>
+    </linearGradient>
+  </defs>
+  <!-- Background Badge -->
+  <rect x="2" y="2" width="60" height="60" rx="14" fill="url(#bg_rhino)" stroke="#bbdefb" stroke-width="2.5"/>
+  <!-- Heavy Armor Shield in background -->
+  <path d="M32 8 L 48 14 L 48 34 Q 32 54 32 58 Q 32 54 16 34 L 16 14 Z" fill="none" stroke="#64b5f6" stroke-width="1.8" opacity="0.5"/>
+  <!-- Rhino Beetle Heavy Shell -->
+  <ellipse cx="32" cy="40" rx="15" ry="17" fill="url(#chitin_rhino)"/>
+  <ellipse cx="32" cy="27" rx="11" ry="8" fill="#212121"/>
+  <!-- Center Carapace Ridge -->
+  <line x1="32" y1="26" x2="32" y2="56" stroke="#0d47a1" stroke-width="2.2"/>
+  <!-- Massive Rhino Horn -->
+  <path d="M30 24 C 30 18 26 12 22 8 C 28 9 34 13 34 16 C 36 12 40 8 44 9 C 39 13 35 18 34 24 Z" fill="url(#horn_grad)" stroke="#37474f" stroke-width="0.8"/>
+  <!-- Glowing Tough Eyes -->
+  <circle cx="26" cy="26" r="2.2" fill="#64b5f6"/>
+  <circle cx="38" cy="26" r="2.2" fill="#64b5f6"/>
+  <!-- Heavy Legs -->
+  <path d="M18 36 Q 10 38 8 46" stroke="#212121" stroke-width="2.8" stroke-linecap="round" fill="none"/>
+  <path d="M46 36 Q 54 38 56 46" stroke="#212121" stroke-width="2.8" stroke-linecap="round" fill="none"/>
+</svg>

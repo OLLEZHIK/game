@@ -3,6 +3,11 @@
 [ext_resource type="Script" path="res://scripts/core/main.gd" id="1_mscript"]
 [ext_resource type="PackedScene" uid="uid://b_forest_map01" path="res://scenes/map/forest_map.tscn" id="2_mmap"]
 [ext_resource type="PackedScene" uid="uid://b8cam1q8rts01" path="res://scenes/camera/rts_camera.tscn" id="3_mcam"]
+[ext_resource type="Texture2D" path="res://assets/icons/icon_worker.svg" id="4_iant"]
+[ext_resource type="Texture2D" path="res://assets/icons/icon_bee.svg" id="5_ibee"]
+[ext_resource type="Texture2D" path="res://assets/icons/icon_woodcutter.svg" id="6_iwood"]
+[ext_resource type="Texture2D" path="res://assets/icons/icon_rhino.svg" id="7_irhino"]
+[ext_resource type="Texture2D" path="res://assets/icons/icon_termite.svg" id="8_iterm"]
 
 [node name="Main" type="Node3D"]
 script = ExtResource("1_mscript")
@@ -10,7 +15,7 @@ script = ExtResource("1_mscript")
 [node name="ForestMap" parent="." instance=ExtResource("2_mmap")]
 
 [node name="RTSCamera" parent="." instance=ExtResource("3_mcam")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.0, 0, 0)
+transform = Transform3D(0.965926, 0, 0.258819, 0, 1, 0, -0.258819, 0, 0.965926, -0.5, 0, -1)
 
 [node name="UI" type="CanvasLayer" parent="."]
 
@@ -148,27 +153,71 @@ layout_mode = 2
 [node name="HeaderSpawn" type="Label" parent="UI/LeftPanel/ScrollContainer/MarginContainer/VBoxContainer"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 14
-text = "🪲 ПРИЗВАТЬ В ЭТОТ ТУННЕЛЬ:"
+text = "🪲 ПРИЗЫВ БУКАШЕК:"
 
 [node name="BtnSpawnWorker" type="Button" parent="UI/LeftPanel/ScrollContainer/MarginContainer/VBoxContainer"]
 unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 36)
 layout_mode = 2
 focus_mode = 0
-text = "🐜 Муравей-Сборщик (40🍯)"
+text = " Муравей-Сборщик (40🍯)"
+icon = ExtResource("4_iant")
+expand_icon = true
+
+[node name="BtnSpawnBee" type="Button" parent="UI/LeftPanel/ScrollContainer/MarginContainer/VBoxContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 36)
+layout_mode = 2
+focus_mode = 0
+text = " Летающая Пчелка (50🍯)"
+icon = ExtResource("5_ibee")
+expand_icon = true
 
 [node name="BtnSpawnWoodcutter" type="Button" parent="UI/LeftPanel/ScrollContainer/MarginContainer/VBoxContainer"]
 unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 36)
 layout_mode = 2
 focus_mode = 0
-text = "🪓 Жук-Лесоруб (60🍯)"
+text = " Жук-Лесоруб (60🍯)"
+icon = ExtResource("6_iwood")
+expand_icon = true
 
 [node name="BtnSpawnRhino" type="Button" parent="UI/LeftPanel/ScrollContainer/MarginContainer/VBoxContainer"]
 unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 36)
 layout_mode = 2
 focus_mode = 0
-text = "🦏 Танк-Носорог (85🍯)"
+text = " Танк-Носорог (85🍯)"
+icon = ExtResource("7_irhino")
+expand_icon = true
 
 [node name="HSeparator2" type="HSeparator" parent="UI/LeftPanel/ScrollContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="HeaderEnemies" type="Label" parent="UI/LeftPanel/ScrollContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.4, 0.35, 1)
+theme_override_font_sizes/font_size = 13
+text = "⚔️ ВОЛНЫ ТЕРМИТОВ:"
+
+[node name="LabelWaveStatus" type="Label" parent="UI/LeftPanel/ScrollContainer/MarginContainer/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.8, 0.5, 1)
+theme_override_font_sizes/font_size = 11
+text = "Волна термитов через: 14 с"
+
+[node name="BtnSpawnEnemy" type="Button" parent="UI/LeftPanel/ScrollContainer/MarginContainer/VBoxContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 34)
+layout_mode = 2
+focus_mode = 0
+theme_override_colors/font_color = Color(1, 0.8, 0.7, 1)
+text = " Выпустить Термита"
+icon = ExtResource("8_iterm")
+expand_icon = true
+
+[node name="HSeparator3" type="HSeparator" parent="UI/LeftPanel/ScrollContainer/MarginContainer/VBoxContainer"]
 layout_mode = 2
 
 [node name="ObstacleBox" type="VBoxContainer" parent="UI/LeftPanel/ScrollContainer/MarginContainer/VBoxContainer"]
@@ -193,7 +242,7 @@ layout_mode = 2
 focus_mode = 0
 text = "🪓 Распилить сук (Пробел)"
 
-[node name="HSeparator3" type="HSeparator" parent="UI/LeftPanel/ScrollContainer/MarginContainer/VBoxContainer"]
+[node name="HSeparator4" type="HSeparator" parent="UI/LeftPanel/ScrollContainer/MarginContainer/VBoxContainer"]
 layout_mode = 2
 
 [node name="LabelSelectedBug" type="Label" parent="UI/LeftPanel/ScrollContainer/MarginContainer/VBoxContainer"]
@@ -210,8 +259,8 @@ anchor_left = 1.0
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = -330.0
-offset_top = -160.0
+offset_left = -340.0
+offset_top = -180.0
 offset_right = -15.0
 offset_bottom = -15.0
 grow_horizontal = 0
@@ -239,19 +288,24 @@ text = "🎮 УПРАВЛЕНИЕ BUGBITS:"
 [node name="Guide1" type="Label" parent="UI/ControlGuide/MarginContainer/VBoxContainer"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 12
-text = "• 1, 2, 3 — выбор туннеля муравейника"
+text = "• Клик по жуку -> Клик по ЛИНИИ или туннелю"
 
 [node name="Guide2" type="Label" parent="UI/ControlGuide/MarginContainer/VBoxContainer"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 12
-text = "• Кнопки слева — призыв жука в туннель"
+text = "• 1, 2, 3 — быстрый выбор линии"
 
 [node name="Guide3" type="Label" parent="UI/ControlGuide/MarginContainer/VBoxContainer"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 12
-text = "• Пробел — распил центрального бревна"
+text = "• 🐝 Пчелка летает по всем 3 линиям за медом"
 
 [node name="Guide4" type="Label" parent="UI/ControlGuide/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "• Пробел — распил центрального бревна"
+
+[node name="Guide5" type="Label" parent="UI/ControlGuide/MarginContainer/VBoxContainer"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 12
 text = "• F / Клик по жуку — вид от лица (Bug-Cam)"

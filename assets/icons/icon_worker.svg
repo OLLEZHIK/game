@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <defs>
+    <radialGradient id="bg_ant" cx="50%" cy="40%" r="60%">
+      <stop offset="0%" stop-color="#ffb74d"/>
+      <stop offset="100%" stop-color="#b26a00"/>
+    </radialGradient>
+    <radialGradient id="chitin" cx="40%" cy="30%" r="70%">
+      <stop offset="0%" stop-color="#5c3818"/>
+      <stop offset="100%" stop-color="#241407"/>
+    </radialGradient>
+    <radialGradient id="honey" cx="35%" cy="35%" r="65%">
+      <stop offset="0%" stop-color="#fff59d"/>
+      <stop offset="60%" stop-color="#fbc02d"/>
+      <stop offset="100%" stop-color="#f57f17"/>
+    </radialGradient>
+  </defs>
+  <!-- Background Badge -->
+  <rect x="2" y="2" width="60" height="60" rx="14" fill="url(#bg_ant)" stroke="#ffe082" stroke-width="2.5"/>
+  <!-- Ant Body Segments -->
+  <!-- Abdomen -->
+  <ellipse cx="45" cy="34" rx="11" ry="8" fill="url(#chitin)"/>
+  <!-- Thorax -->
+  <ellipse cx="31" cy="34" rx="7" ry="5.5" fill="url(#chitin)"/>
+  <!-- Head -->
+  <circle cx="18" cy="33" r="6.5" fill="url(#chitin)"/>
+  <!-- Ant Eye -->
+  <circle cx="15" cy="31" r="1.6" fill="#ffe082"/>
+  <!-- Antennae -->
+  <path d="M16 28 Q 12 20 8 19" stroke="#3e230f" stroke-width="2" stroke-linecap="round" fill="none"/>
+  <path d="M19 27 Q 18 18 14 16" stroke="#3e230f" stroke-width="2" stroke-linecap="round" fill="none"/>
+  <!-- Legs -->
+  <path d="M28 35 Q 26 44 22 49" stroke="#3e230f" stroke-width="2.2" stroke-linecap="round" fill="none"/>
+  <path d="M32 35 Q 33 45 36 50" stroke="#3e230f" stroke-width="2.2" stroke-linecap="round" fill="none"/>
+  <path d="M35 35 Q 42 45 47 48" stroke="#3e230f" stroke-width="2.2" stroke-linecap="round" fill="none"/>
+  <!-- Honey Drop carried in jaws -->
+  <path d="M12 36 C 8 36 6 42 10 46 C 14 50 18 46 16 41 Z" fill="url(#honey)" stroke="#fff" stroke-width="0.8"/>
+</svg>

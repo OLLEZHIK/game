@@ -1,0 +1,88 @@
+[gd_scene load_steps=9 format=3 uid="uid://u_flying_bee01"]
+
+[ext_resource type="Script" path="res://scripts/units/flying_bee.gd" id="1_fbee"]
+[ext_resource type="Material" uid="uid://m_bee_yellow01" path="res://assets/materials/mat_bee_yellow.tres" id="2_byellow"]
+[ext_resource type="Material" uid="uid://m_bee_black01" path="res://assets/materials/mat_bee_black.tres" id="3_bblack"]
+[ext_resource type="Material" uid="uid://m_bee_wing01" path="res://assets/materials/mat_bee_wing.tres" id="4_bwing"]
+
+[sub_resource type="SphereMesh" id="SphereMesh_head"]
+material = ExtResource("3_bblack")
+radius = 0.22
+height = 0.36
+radial_segments = 10
+rings = 6
+
+[sub_resource type="SphereMesh" id="SphereMesh_thorax"]
+material = ExtResource("2_byellow")
+radius = 0.32
+height = 0.5
+radial_segments = 12
+rings = 6
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_abdomen"]
+material = ExtResource("2_byellow")
+radius = 0.36
+height = 0.85
+radial_segments = 12
+rings = 6
+
+[sub_resource type="BoxMesh" id="BoxMesh_wing"]
+material = ExtResource("4_bwing")
+size = Vector3(0.5, 0.02, 0.85)
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_bee"]
+radius = 0.65
+
+[node name="FlyingBee" type="CharacterBody3D"]
+script = ExtResource("1_fbee")
+
+[node name="Visuals" type="Node3D" parent="."]
+
+[node name="Head" type="MeshInstance3D" parent="Visuals"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.05, -0.45)
+mesh = SubResource("SphereMesh_head")
+
+[node name="Thorax" type="MeshInstance3D" parent="Visuals"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.05, -0.1)
+mesh = SubResource("SphereMesh_thorax")
+
+[node name="Abdomen" type="MeshInstance3D" parent="Visuals"]
+transform = Transform3D(1, 0, 0, 0, 0.965926, 0.258819, 0, -0.258819, 0.965926, 0, 0.02, 0.45)
+mesh = SubResource("CapsuleMesh_abdomen")
+
+[node name="Stripe1" type="MeshInstance3D" parent="Visuals/Abdomen"]
+transform = Transform3D(1.02, 0, 0, 0, 1.02, 0, 0, 0, 0.22, 0, 0, -0.1)
+mesh = SubResource("CapsuleMesh_abdomen")
+surface_material_override/0 = ExtResource("3_bblack")
+
+[node name="Stripe2" type="MeshInstance3D" parent="Visuals/Abdomen"]
+transform = Transform3D(1.02, 0, 0, 0, 1.02, 0, 0, 0, 0.22, 0, 0, 0.15)
+mesh = SubResource("CapsuleMesh_abdomen")
+surface_material_override/0 = ExtResource("3_bblack")
+
+[node name="WingLeft" type="Node3D" parent="Visuals"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.25, 0.22, -0.05)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Visuals/WingLeft"]
+transform = Transform3D(0.965926, 0, -0.258819, 0, 1, 0, 0.258819, 0, 0.965926, -0.3, 0, 0.3)
+mesh = SubResource("BoxMesh_wing")
+
+[node name="WingRight" type="Node3D" parent="Visuals"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.25, 0.22, -0.05)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Visuals/WingRight"]
+transform = Transform3D(0.965926, 0, 0.258819, 0, 1, 0, -0.258819, 0, 0.965926, 0.3, 0, 0.3)
+mesh = SubResource("BoxMesh_wing")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+shape = SubResource("SphereShape3D_bee")
+
+[node name="HpLabel" type="Label3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.1, 0)
+pixel_size = 0.0075
+billboard = 1
+double_sided = false
+text = "🐝 Пчелка [50/50]"
+font_size = 26
+outline_size = 5
+outline_color = Color(0, 0, 0, 0.9)

@@ -9,10 +9,10 @@ extends Node3D
 @onready var elevation_node: Node3D = $Elevation
 @onready var camera_3d: Camera3D = $Elevation/Camera3D
 
-var default_position: Vector3 = Vector3(7.0, 0, 0)
-var _target_position: Vector3 = Vector3(7.0, 0, 0)
-var _target_zoom: float = 30.0
-var _current_zoom: float = 30.0
+var default_position: Vector3 = Vector3(-0.5, 0, -1.0)
+var _target_position: Vector3 = Vector3(-0.5, 0, -1.0)
+var _target_zoom: float = 36.0
+var _current_zoom: float = 36.0
 
 # Bug-Cam tracking
 var tracked_target: Node3D = null

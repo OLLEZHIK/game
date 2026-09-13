@@ -1,0 +1,14 @@
+[gd_resource type="StandardMaterial3D" format=3 uid="uid://m_bee_wing01"]
+
+[resource]
+resource_name = "MatBeeWing"
+transparency = 1
+albedo_color = Color(0.85, 0.95, 1.0, 0.55)
+roughness = 0.15
+clearcoat_enabled = true
+clearcoat = 1.0
+rim_enabled = true
+rim = 0.8
+rim_tint = 0.9
+refraction_enabled = true
+refraction_scale = 0.02

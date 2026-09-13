@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <defs>
+    <radialGradient id="bg_wood" cx="50%" cy="40%" r="60%">
+      <stop offset="0%" stop-color="#81c784"/>
+      <stop offset="100%" stop-color="#2e7d32"/>
+    </radialGradient>
+    <radialGradient id="chitin_wood" cx="40%" cy="30%" r="70%">
+      <stop offset="0%" stop-color="#8d6e63"/>
+      <stop offset="100%" stop-color="#3e2723"/>
+    </radialGradient>
+  </defs>
+  <!-- Background Badge -->
+  <rect x="2" y="2" width="60" height="60" rx="14" fill="url(#bg_wood)" stroke="#c8e6c9" stroke-width="2.5"/>
+  <!-- Crossed Axes / Wood Saw in background -->
+  <path d="M14 50 L 50 14" stroke="#d7ccc8" stroke-width="3" stroke-linecap="round"/>
+  <path d="M42 12 L 52 22 L 48 26 L 38 16 Z" fill="#b0bec5" stroke="#78909c" stroke-width="1"/>
+  <!-- Beetle Body -->
+  <ellipse cx="32" cy="38" rx="13" ry="16" fill="url(#chitin_wood)"/>
+  <!-- Wing Split Line -->
+  <line x1="32" y1="26" x2="32" y2="53" stroke="#271610" stroke-width="2"/>
+  <!-- Head & Jaws -->
+  <ellipse cx="32" cy="23" rx="7" ry="5.5" fill="#3e2723"/>
+  <!-- Powerful Saw Jaws / Horns -->
+  <path d="M28 20 Q 22 12 18 10 Q 21 16 26 21 Z" fill="#21120b"/>
+  <path d="M36 20 Q 42 12 46 10 Q 43 16 38 21 Z" fill="#21120b"/>
+  <!-- Antennae -->
+  <path d="M27 19 Q 15 15 11 25" stroke="#3e2723" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+  <path d="M37 19 Q 49 15 53 25" stroke="#3e2723" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+  <!-- Eyes -->
+  <circle cx="28" cy="22" r="1.4" fill="#a5d6a7"/>
+  <circle cx="36" cy="22" r="1.4" fill="#a5d6a7"/>
+</svg>

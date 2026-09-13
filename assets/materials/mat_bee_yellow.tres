@@ -1,0 +1,11 @@
+[gd_resource type="StandardMaterial3D" format=3 uid="uid://m_bee_yellow01"]
+
+[resource]
+resource_name = "MatBeeYellow"
+albedo_color = Color(1.0, 0.82, 0.12, 1)
+roughness = 0.65
+rim_enabled = true
+rim = 0.4
+rim_tint = 0.5
+subsurf_scatter_enabled = true
+subsurf_scatter_strength = 0.2

@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <defs>
+    <radialGradient id="bg_bee" cx="50%" cy="40%" r="60%">
+      <stop offset="0%" stop-color="#fff176"/>
+      <stop offset="100%" stop-color="#f57f17"/>
+    </radialGradient>
+    <radialGradient id="wing_grad" cx="40%" cy="40%" r="60%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.95"/>
+      <stop offset="100%" stop-color="#80d8ff" stop-opacity="0.6"/>
+    </radialGradient>
+  </defs>
+  <!-- Background Badge -->
+  <rect x="2" y="2" width="60" height="60" rx="14" fill="url(#bg_bee)" stroke="#fff9c4" stroke-width="2.5"/>
+  <!-- Wings (Back) -->
+  <ellipse cx="28" cy="18" rx="8" ry="14" transform="rotate(-30 28 18)" fill="url(#wing_grad)" stroke="#b3e5fc" stroke-width="1.2"/>
+  <ellipse cx="38" cy="17" rx="7" ry="12" transform="rotate(25 38 17)" fill="url(#wing_grad)" stroke="#b3e5fc" stroke-width="1.2"/>
+  <!-- Bee Body (Abdomen & Thorax) -->
+  <ellipse cx="32" cy="38" rx="14" ry="17" fill="#ffb300"/>
+  <!-- Black Stripes -->
+  <path d="M19 32 Q 32 35 45 32" stroke="#212121" stroke-width="4.5" fill="none" stroke-linecap="round"/>
+  <path d="M20 40 Q 32 44 44 40" stroke="#212121" stroke-width="4.5" fill="none" stroke-linecap="round"/>
+  <path d="M24 47 Q 32 50 40 47" stroke="#212121" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+  <!-- Stinger -->
+  <polygon points="32,57 29,52 35,52" fill="#212121"/>
+  <!-- Head -->
+  <circle cx="32" cy="24" r="7.5" fill="#212121"/>
+  <!-- Big Friendly Eyes -->
+  <ellipse cx="29" cy="23" rx="2.5" ry="3.5" fill="#ffffff"/>
+  <circle cx="28.5" cy="23" r="1.5" fill="#000000"/>
+  <ellipse cx="35" cy="23" rx="2.5" ry="3.5" fill="#ffffff"/>
+  <circle cx="35.5" cy="23" r="1.5" fill="#000000"/>
+  <!-- Antennae -->
+  <path d="M29 18 Q 25 10 20 11" stroke="#212121" stroke-width="2" stroke-linecap="round" fill="none"/>
+  <circle cx="20" cy="11" r="1.5" fill="#ffb300"/>
+  <path d="M35 18 Q 39 10 44 11" stroke="#212121" stroke-width="2" stroke-linecap="round" fill="none"/>
+  <circle cx="44" cy="11" r="1.5" fill="#ffb300"/>
+</svg>

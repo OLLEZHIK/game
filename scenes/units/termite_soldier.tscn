@@ -1,0 +1,72 @@
+[gd_scene load_steps=8 format=3 uid="uid://u_termite_soldier01"]
+
+[ext_resource type="Script" path="res://scripts/units/bug_unit.gd" id="1_uterm"]
+[ext_resource type="Material" uid="uid://m_termite01" path="res://assets/materials/mat_termite_chitin.tres" id="2_mterm"]
+[ext_resource type="Material" uid="uid://m_ant_chitin01" path="res://assets/materials/mat_ant_chitin.tres" id="3_mpincer"]
+
+[sub_resource type="SphereMesh" id="SphereMesh_body"]
+material = ExtResource("2_mterm")
+radius = 0.35
+height = 0.7
+radial_segments = 12
+rings = 6
+
+[sub_resource type="SphereMesh" id="SphereMesh_head"]
+material = ExtResource("3_mpincer")
+radius = 0.32
+height = 0.52
+radial_segments = 10
+rings = 6
+
+[sub_resource type="PrismMesh" id="PrismMesh_pincer"]
+material = ExtResource("3_mpincer")
+left_to_right = 0.8
+size = Vector3(0.12, 0.5, 0.1)
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_term"]
+radius = 0.65
+
+[node name="TermiteSoldier" type="CharacterBody3D"]
+script = ExtResource("1_uterm")
+unit_name = "Термит-Воин"
+role = 3
+is_enemy = true
+max_health = 85.0
+move_speed = 2.8
+attack_damage = 18.0
+
+[node name="Visuals" type="Node3D" parent="."]
+
+[node name="BodyMesh" type="Node3D" parent="Visuals"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.4, 0)
+
+[node name="Abdomen" type="MeshInstance3D" parent="Visuals/BodyMesh"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.05, 0.35)
+mesh = SubResource("SphereMesh_body")
+
+[node name="Head" type="MeshInstance3D" parent="Visuals/BodyMesh"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.1, -0.45)
+mesh = SubResource("SphereMesh_head")
+
+[node name="PincerL" type="MeshInstance3D" parent="Visuals/BodyMesh"]
+transform = Transform3D(0.965926, 0.258819, 0, -0.258819, 0.965926, 0, 0, 0, 1, -0.15, 0.08, -0.7)
+mesh = SubResource("PrismMesh_pincer")
+
+[node name="PincerR" type="MeshInstance3D" parent="Visuals/BodyMesh"]
+transform = Transform3D(0.965926, -0.258819, 0, 0.258819, 0.965926, 0, 0, 0, 1, 0.15, 0.08, -0.7)
+mesh = SubResource("PrismMesh_pincer")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.45, 0)
+shape = SubResource("SphereShape3D_term")
+
+[node name="HpLabel" type="Label3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.4, 0)
+pixel_size = 0.0075
+billboard = 1
+double_sided = false
+text = "Термит [85/85]"
+font_size = 26
+outline_size = 5
+outline_color = Color(0, 0, 0, 0.9)
+modulate = Color(1, 0.35, 0.25, 1)

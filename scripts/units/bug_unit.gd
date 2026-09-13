@@ -100,6 +100,13 @@ func _process_marching(delta: float) -> void:
 			_attack_timer = 2.5 # harvesting duration
 			return
 
+	# Check for enemy encounter
+	var enemy = _find_nearest_enemy_on_lane()
+	if enemy:
+		target_enemy = enemy
+		current_state = UnitState.FIGHTING
+		return
+
 	# Move along curve
 	progress_dist += march_direction * move_speed * delta
 	progress_dist = clampf(progress_dist, 0.0, path_total_len)
@@ -110,6 +117,23 @@ func _process_marching(delta: float) -> void:
 	if (not is_enemy and progress_dist >= path_total_len) or (is_enemy and progress_dist <= 0.0):
 		# Reached opposing base
 		queue_free()
+
+func _find_nearest_enemy_on_lane() -> CharacterBody3D:
+	var tree = get_tree()
+	if not tree:
+		return null
+	var main_node = tree.root.find_child("Main", true, false)
+	if not main_node or not ("active_units" in main_node):
+		return null
+	
+	for other in main_node.active_units:
+		if is_instance_valid(other) and other != self:
+			if ("is_enemy" in other) and (other.is_enemy != is_enemy):
+				if ("lane_index" in other) and other.lane_index == lane_index:
+					if ("current_state" in other) and other.current_state != UnitState.DEAD:
+						if global_position.distance_to(other.global_position) <= 2.2:
+							return other
+	return null
 
 func _process_harvesting(delta: float) -> void:
 	# Wobble animation while drinking nectar
@@ -155,8 +179,18 @@ func _process_sawing(delta: float) -> void:
 		target_obstacle.apply_sawing_damage(18.0)
 
 func _process_fighting(_delta: float) -> void:
-	# Combat placeholder
-	pass
+	if not is_instance_valid(target_enemy) or target_enemy.current_state == UnitState.DEAD:
+		target_enemy = null
+		current_state = UnitState.MARCHING
+		return
+		
+	# Attack animation: lunge
+	if body_mesh:
+		body_mesh.position.z = sin(_walk_anim_time * 5.0) * 0.15
+		
+	if _attack_timer <= 0.0:
+		_attack_timer = attack_cooldown
+		target_enemy.take_damage(attack_damage)
 
 func _update_position_from_progress() -> void:
 	if not path_curve:
