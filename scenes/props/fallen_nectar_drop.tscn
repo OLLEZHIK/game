@@ -35,7 +35,7 @@ double_sided = false
 text = "🍯 +30"
 font_size = 24
 outline_size = 4
-outline_color = Color(0, 0, 0, 0.85)
+outline_modulate = Color(0, 0, 0, 0.85)
 modulate = Color(1, 0.9, 0.3, 1)
 
 [node name="OmniLight3D" type="OmniLight3D" parent="."]

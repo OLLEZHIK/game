@@ -9,6 +9,8 @@ signal nectar_harvested_by_bee()
 @export var reload_time: float = 8.0
 @export var associated_lane_index: int = 2
 @export var drop_target_z: float = 12.0
+@export var stem_height: float = 1.85 ## Height of flower stem/head. Higher stem = larger drop scatter radius!
+@export var scatter_radius_factor: float = 2.0 ## Radius multiplier per meter of stem height
 
 var has_nectar: bool = true
 var is_reloading: bool = false
@@ -35,7 +37,39 @@ func _ready() -> void:
 	reload_time = GameBalance.FLOWER_RELOAD_TIME
 	# Stagger initial timers so flowers don't drop at the exact same second
 	nectar_timer = randf_range(2.0, 7.0)
+	set_stem_height(stem_height)
 	_update_visuals()
+
+func get_head_height() -> float:
+	if center_dome:
+		return center_dome.position.y * scale.y
+	elif droplet_mesh:
+		return droplet_mesh.position.y * scale.y
+	return stem_height * scale.y
+
+## Radius increases proportionally with stem / head height
+func get_scatter_radius() -> float:
+	var h = get_head_height()
+	if h <= 0.1:
+		h = stem_height
+	return max(1.2, h * scatter_radius_factor)
+
+func set_stem_height(height: float) -> void:
+	stem_height = max(0.8, height)
+	var ratio = stem_height / 1.85
+	if has_node("Stem"):
+		var stem = get_node("Stem") as Node3D
+		stem.scale.y = ratio
+		stem.position.y = 0.7 * ratio
+	if has_node("CenterDome"):
+		var dome = get_node("CenterDome") as Node3D
+		dome.position.y = 1.45 * ratio
+	if has_node("Petals"):
+		var p = get_node("Petals") as Node3D
+		p.position.y = 1.4 * ratio
+	if has_node("NectarDroplet"):
+		var dr = get_node("NectarDroplet") as Node3D
+		dr.position.y = 1.85 * ratio
 
 func can_be_targeted_by_bee() -> bool:
 	return has_nectar and not is_reserved_by_bee
@@ -84,9 +118,19 @@ func drop_nectar_onto_path() -> void:
 	nectar_timer = 0.0
 	release_bee_reservation()
 
-	# Drop target coordinate on the dirt path of the lane
-	var drop_pos = Vector3(global_position.x, 0.22, drop_target_z)
-	_animate_spit_and_splash(drop_pos)
+	# 1. Random position along the lane within radius proportional to stem height
+	var scatter_rad = get_scatter_radius()
+	var rand_x = clampf(global_position.x + randf_range(-scatter_rad, scatter_rad), -4.0, 18.0)
+	var rand_z = drop_target_z + randf_range(-0.4, 0.4)
+	var raw_drop_pos = Vector3(rand_x, 0.22, rand_z)
+
+	# 2. Anti-stacking: check existing & in-flight drops so it lands adjacent without overlap ("впритык, но рядом")
+	var final_drop_pos = raw_drop_pos
+	var main_node = get_tree().root.find_child("Main", true, false)
+	if main_node and main_node.has_method("reserve_unstacked_drop_position"):
+		final_drop_pos = main_node.reserve_unstacked_drop_position(raw_drop_pos, drop_target_z)
+
+	_animate_spit_and_splash(final_drop_pos)
 
 func _animate_spit_and_splash(drop_pos: Vector3) -> void:
 	# 1. Daisy flower squash & spring recoil ("выплёвывание")
@@ -135,15 +179,16 @@ func _launch_spit_blob(target_pos: Vector3) -> void:
 	blob.add_child(bl_light)
 
 	spawn_parent.add_child(blob)
-	var start_pos = global_position + Vector3(0, 1.8, 0)
+	var start_pos = global_position + Vector3(0, stem_height, 0)
 	blob.global_position = start_pos
 
 	var flight_tw = create_tween()
 	var flight_duration = 0.55
+	var arc_peak = max(2.5, stem_height * 1.6)
 	flight_tw.tween_method(func(t: float):
 		if is_instance_valid(blob):
 			var cur = start_pos.lerp(target_pos, t)
-			cur.y += sin(t * PI) * 3.6 # High ballistic ejection arc!
+			cur.y += sin(t * PI) * arc_peak # High ballistic ejection arc scaling with stem height!
 			blob.global_position = cur
 			if t < 0.5:
 				blob.scale = Vector3(0.8, 1.4, 0.8) # Stretched along flight path

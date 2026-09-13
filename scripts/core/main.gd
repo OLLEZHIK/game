@@ -43,6 +43,7 @@ const FALLEN_NECTAR_DROP_SCENE = preload("res://scenes/props/fallen_nectar_drop.
 @onready var label_active_lane: Label = %LabelActiveLane if has_node("%LabelActiveLane") else null
 
 var fallen_nectar_drops: Array = []
+var in_flight_drop_targets: Array = []
 
 # Economy resources (from docs/03_economy_and_resources.md)
 var nectar: int = 200
@@ -310,9 +311,98 @@ func _on_unit_died(unit: Node3D) -> void:
 		if rts_camera and rts_camera.is_bug_cam:
 			rts_camera.reset_to_overview()
 
+## Anti-stacking drop placement: finds adjacent non-overlapping coordinate along lane ("впритык, но рядом")
+func calculate_unstacked_drop_position(desired_pos: Vector3, lane_z: float) -> Vector3:
+	const MIN_DISTANCE: float = 0.85
+	const MIN_DIST_SQ: float = MIN_DISTANCE * MIN_DISTANCE
+
+	var occupied_points: Array[Vector2] = []
+	for drop in fallen_nectar_drops:
+		if is_instance_valid(drop) and not drop.is_collected:
+			var d_pos = drop.global_position if drop.is_inside_tree() else drop.position
+			occupied_points.append(Vector2(d_pos.x, d_pos.z))
+	for pt in in_flight_drop_targets:
+		if pt is Vector2:
+			occupied_points.append(pt)
+
+	var target_p2 = Vector2(desired_pos.x, desired_pos.z)
+	var is_spot_free = true
+	for op in occupied_points:
+		if target_p2.distance_squared_to(op) < MIN_DIST_SQ:
+			is_spot_free = false
+			break
+
+	if is_spot_free:
+		return desired_pos
+
+	# If occupied, find adjacent clearance spot ("впритык, но рядом")
+	var best_p2: Vector2 = target_p2
+	var found = false
+
+	# Test expanding rings around desired_pos
+	for ring in range(1, 14):
+		var radius = ring * MIN_DISTANCE
+		var steps = 8 * ring
+		for step in range(steps):
+			var angle = (float(step) / float(steps)) * TAU
+			var cand_x = desired_pos.x + cos(angle) * radius
+			var cand_z = desired_pos.z + sin(angle) * radius
+
+			# Keep strictly on dirt lane width & playable bounds
+			if absf(cand_z - lane_z) > 0.8:
+				continue
+			if cand_x < -4.0 or cand_x > 18.0:
+				continue
+
+			var cand_p2 = Vector2(cand_x, cand_z)
+			var valid = true
+			for op in occupied_points:
+				if cand_p2.distance_squared_to(op) < MIN_DIST_SQ:
+					valid = false
+					break
+			if valid:
+				best_p2 = cand_p2
+				found = true
+				break
+		if found:
+			break
+
+	# Fallback: slide linearly along X axis on the lane
+	if not found:
+		for step in range(1, 25):
+			for sgn in [1.0, -1.0]:
+				var cand_x = clampf(desired_pos.x + sgn * step * MIN_DISTANCE, -4.0, 18.0)
+				var cand_p2 = Vector2(cand_x, lane_z)
+				var valid = true
+				for op in occupied_points:
+					if cand_p2.distance_squared_to(op) < MIN_DIST_SQ:
+						valid = false
+						break
+				if valid:
+					best_p2 = cand_p2
+					found = true
+					break
+			if found:
+				break
+
+	return Vector3(best_p2.x, desired_pos.y, best_p2.y)
+
+func reserve_unstacked_drop_position(desired_pos: Vector3, lane_z: float) -> Vector3:
+	var final_pos = calculate_unstacked_drop_position(desired_pos, lane_z)
+	in_flight_drop_targets.append(Vector2(final_pos.x, final_pos.z))
+	return final_pos
+
 func spawn_fallen_nectar_drop(pos: Vector3, lane_idx: int) -> Node3D:
+	# Release reservation from in_flight_drop_targets
+	var p2 = Vector2(pos.x, pos.z)
+	for i in range(in_flight_drop_targets.size() - 1, -1, -1):
+		if (in_flight_drop_targets[i] as Vector2).distance_squared_to(p2) < 0.25:
+			in_flight_drop_targets.remove_at(i)
+			break
+
+	var final_pos = calculate_unstacked_drop_position(pos, pos.z)
 	var drop = FALLEN_NECTAR_DROP_SCENE.instantiate()
-	drop.position = pos
+	drop.position = final_pos
 	drop.lane_index = lane_idx
 	add_child(drop)
 	fallen_nectar_drops.append(drop)
