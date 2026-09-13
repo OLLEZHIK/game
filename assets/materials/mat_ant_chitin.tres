@@ -1,0 +1,12 @@
+[gd_resource type="StandardMaterial3D" format=3 uid="uid://m_ant_chitin01"]
+
+[resource]
+resource_name = "MatAntChitin"
+albedo_color = Color(0.18, 0.08, 0.05, 1)
+metallic = 0.2
+roughness = 0.25
+clearcoat_enabled = true
+clearcoat = 0.8
+clearcoat_roughness = 0.15
+rim_enabled = true
+rim = 0.2

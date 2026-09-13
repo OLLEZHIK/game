@@ -1,0 +1,298 @@
+[gd_scene load_steps=4 format=3 uid="uid://b_main_game01"]
+
+[ext_resource type="Script" path="res://scripts/core/main.gd" id="1_mscript"]
+[ext_resource type="PackedScene" uid="uid://b_forest_map01" path="res://scenes/map/forest_map.tscn" id="2_mmap"]
+[ext_resource type="PackedScene" uid="uid://b8cam1q8rts01" path="res://scenes/camera/rts_camera.tscn" id="3_mcam"]
+
+[node name="Main" type="Node3D"]
+script = ExtResource("1_mscript")
+
+[node name="ForestMap" parent="." instance=ExtResource("2_mmap")]
+
+[node name="RTSCamera" parent="." instance=ExtResource("3_mcam")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8, 0, 0)
+
+[node name="UI" type="CanvasLayer" parent="."]
+
+[node name="TopBar" type="PanelContainer" parent="UI"]
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 54.0
+grow_horizontal = 2
+mouse_filter = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="UI/TopBar"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/margin_left = 20
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 20
+theme_override_constants/margin_bottom = 8
+
+[node name="HBoxContainer" type="HBoxContainer" parent="UI/TopBar/MarginContainer"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 25
+
+[node name="Title" type="Label" parent="UI/TopBar/MarginContainer/HBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "🌲 КАРТА 1: ЛЕСНАЯ ЧАЩА (3 ПОЛОСЫ)"
+
+[node name="VSeparator" type="VSeparator" parent="UI/TopBar/MarginContainer/HBoxContainer"]
+layout_mode = 2
+
+[node name="LabelNectar" type="Label" parent="UI/TopBar/MarginContainer/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.85, 0.2, 1)
+theme_override_font_sizes/font_size = 17
+text = "🍯 Нектар: 200"
+
+[node name="LabelPollen" type="Label" parent="UI/TopBar/MarginContainer/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.4, 0.9, 1, 1)
+theme_override_font_sizes/font_size = 17
+text = "✨ Пыльца / Биомасса: 40"
+
+[node name="LabelNotification" type="Label" parent="UI/TopBar/MarginContainer/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.4, 1, 0.5, 1)
+theme_override_font_sizes/font_size = 15
+horizontal_alignment = 2
+
+[node name="BugCamBanner" type="PanelContainer" parent="UI"]
+unique_name_in_owner = true
+visible = false
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -220.0
+offset_top = 65.0
+offset_right = 220.0
+offset_bottom = 105.0
+grow_horizontal = 2
+mouse_filter = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="UI/BugCamBanner"]
+layout_mode = 2
+theme_override_constants/margin_left = 15
+theme_override_constants/margin_right = 15
+
+[node name="Label" type="Label" parent="UI/BugCamBanner/MarginContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.9, 0.3, 1)
+theme_override_font_sizes/font_size = 14
+text = "👁 РЕЖИМ «BUG-CAM» (ВИД ОТ ЛИЦА ЖУКА) — ESC для выхода"
+horizontal_alignment = 1
+
+[node name="LeftPanel" type="PanelContainer" parent="UI"]
+anchors_preset = 9
+anchor_bottom = 1.0
+offset_top = 62.0
+offset_right = 340.0
+offset_bottom = -15.0
+grow_vertical = 2
+
+[node name="ScrollContainer" type="ScrollContainer" parent="UI/LeftPanel"]
+layout_mode = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="UI/LeftPanel/ScrollContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 12
+theme_override_constants/margin_right = 12
+theme_override_constants/margin_bottom = 12
+
+[node name="VBoxContainer" type="VBoxContainer" parent="UI/LeftPanel/ScrollContainer/MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="HeaderLanes" type="Label" parent="UI/LeftPanel/ScrollContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 15
+text = "📋 СТАТУС 3-Х ПОЛОС:"
+
+[node name="TopLaneBox" type="VBoxContainer" parent="UI/LeftPanel/ScrollContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="BtnFocusTop" type="Button" parent="UI/LeftPanel/ScrollContainer/MarginContainer/VBoxContainer/TopLaneBox"]
+unique_name_in_owner = true
+layout_mode = 2
+focus_mode = 0
+text = "[ 1 ] Северная тропа (Top)"
+
+[node name="LabelTopStatus" type="Label" parent="UI/LeftPanel/ScrollContainer/MarginContainer/VBoxContainer/TopLaneBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.4, 0.9, 0.4, 1)
+theme_override_font_sizes/font_size = 12
+text = "• Открыта (Грибы, замшелые корни)"
+
+[node name="HSeparator1" type="HSeparator" parent="UI/LeftPanel/ScrollContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="MidLaneBox" type="VBoxContainer" parent="UI/LeftPanel/ScrollContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="BtnFocusMid" type="Button" parent="UI/LeftPanel/ScrollContainer/MarginContainer/VBoxContainer/MidLaneBox"]
+unique_name_in_owner = true
+layout_mode = 2
+focus_mode = 0
+text = "[ 2 ] Центральная тропа (Mid)"
+
+[node name="LabelMidStatus" type="Label" parent="UI/LeftPanel/ScrollContainer/MarginContainer/VBoxContainer/MidLaneBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.5, 0.3, 1)
+theme_override_font_sizes/font_size = 12
+text = "• ПЕРЕКРЫТА (Поваленный сук)"
+
+[node name="LabelLogHp" type="Label" parent="UI/LeftPanel/ScrollContainer/MarginContainer/VBoxContainer/MidLaneBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "Сук на центре: 120/120 HP"
+
+[node name="BtnSawLog" type="Button" parent="UI/LeftPanel/ScrollContainer/MarginContainer/VBoxContainer/MidLaneBox"]
+unique_name_in_owner = true
+layout_mode = 2
+focus_mode = 0
+text = "🪓 Распилить сук (Пробел)"
+
+[node name="HSeparator2" type="HSeparator" parent="UI/LeftPanel/ScrollContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="BotLaneBox" type="VBoxContainer" parent="UI/LeftPanel/ScrollContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="BtnFocusBot" type="Button" parent="UI/LeftPanel/ScrollContainer/MarginContainer/VBoxContainer/BotLaneBox"]
+unique_name_in_owner = true
+layout_mode = 2
+focus_mode = 0
+text = "[ 3 ] Южная тропа (Bot)"
+
+[node name="LabelBotStatus" type="Label" parent="UI/LeftPanel/ScrollContainer/MarginContainer/VBoxContainer/BotLaneBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.85, 0.3, 1)
+theme_override_font_sizes/font_size = 12
+text = "• Открыта (Поляна нектара)"
+
+[node name="HSeparator3" type="HSeparator" parent="UI/LeftPanel/ScrollContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="BtnFocusBase" type="Button" parent="UI/LeftPanel/ScrollContainer/MarginContainer/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+focus_mode = 0
+text = "🏰 К базе муравьев"
+
+[node name="HSeparator4" type="HSeparator" parent="UI/LeftPanel/ScrollContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="HeaderSpawn" type="Label" parent="UI/LeftPanel/ScrollContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 15
+text = "🪲 ПРИЗЫВ ЖУКОВ В БОЙ:"
+
+[node name="BtnSpawnWorker" type="Button" parent="UI/LeftPanel/ScrollContainer/MarginContainer/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+focus_mode = 0
+text = "🐜 Муравей-Сборщик (40🍯)"
+
+[node name="BtnSpawnWoodcutter" type="Button" parent="UI/LeftPanel/ScrollContainer/MarginContainer/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+focus_mode = 0
+text = "🪓 Жук-Лесоруб (60🍯)"
+
+[node name="BtnSpawnRhino" type="Button" parent="UI/LeftPanel/ScrollContainer/MarginContainer/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+focus_mode = 0
+text = "🦏 Танк-Носорог (85🍯)"
+
+[node name="HSeparator5" type="HSeparator" parent="UI/LeftPanel/ScrollContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="LabelSelectedBug" type="Label" parent="UI/LeftPanel/ScrollContainer/MarginContainer/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.5, 0.9, 1, 1)
+theme_override_font_sizes/font_size = 12
+text = "Кликните по жуку для выбора"
+autowrap_mode = 2
+
+[node name="ControlGuide" type="PanelContainer" parent="UI"]
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -350.0
+offset_top = -225.0
+offset_right = -15.0
+offset_bottom = -15.0
+grow_horizontal = 0
+grow_vertical = 0
+mouse_filter = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="UI/ControlGuide"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 12
+theme_override_constants/margin_bottom = 10
+
+[node name="VBoxContainer" type="VBoxContainer" parent="UI/ControlGuide/MarginContainer"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 4
+
+[node name="GuideTitle" type="Label" parent="UI/ControlGuide/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "🎮 УПРАВЛЕНИЕ И БОЙ:"
+
+[node name="Guide1" type="Label" parent="UI/ControlGuide/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "• WASD / Стрелки — панорамирование"
+
+[node name="GuideDrag" type="Label" parent="UI/ControlGuide/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.4, 0.9, 1, 1)
+theme_override_font_sizes/font_size = 12
+text = "• Зажать ПКМ / Колесико — тянуть карту"
+
+[node name="Guide2" type="Label" parent="UI/ControlGuide/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "• Колесико мыши — плавный зум"
+
+[node name="Guide3" type="Label" parent="UI/ControlGuide/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "• Q / E — поворот угла обзора"
+
+[node name="Guide4" type="Label" parent="UI/ControlGuide/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "• 1, 2, 3 — переход по дорожкам"
+
+[node name="Guide5" type="Label" parent="UI/ControlGuide/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "• F / Клик — режим «Bug-Cam» (вид от лица)"
+
+[node name="Guide6" type="Label" parent="UI/ControlGuide/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "• Пробел — распил бревна на центре"

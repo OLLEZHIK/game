@@ -1,0 +1,63 @@
+[gd_scene load_steps=8 format=3 uid="uid://b_log_obst01"]
+
+[ext_resource type="Script" path="res://scripts/map/obstacle.gd" id="1_scrobst"]
+[ext_resource type="Material" uid="uid://m_bark01" path="res://assets/materials/mat_bark.tres" id="2_mbark"]
+[ext_resource type="Material" uid="uid://m_moss01" path="res://assets/materials/mat_moss.tres" id="3_mmoss"]
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_trunk"]
+material = ExtResource("2_mbark")
+top_radius = 0.55
+bottom_radius = 0.65
+height = 5.2
+radial_segments = 12
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_branch"]
+material = ExtResource("2_mbark")
+top_radius = 0.18
+bottom_radius = 0.28
+height = 2.4
+radial_segments = 8
+
+[sub_resource type="BoxMesh" id="BoxMesh_moss"]
+material = ExtResource("3_mmoss")
+size = Vector3(3.8, 0.25, 0.7)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_coll"]
+size = Vector3(5.4, 1.4, 1.6)
+
+[node name="ObstacleLog" type="Node3D"]
+script = ExtResource("1_scrobst")
+
+[node name="VisualMesh" type="Node3D" parent="."]
+
+[node name="Trunk" type="MeshInstance3D" parent="VisualMesh"]
+transform = Transform3D(-4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0, 1, 0, 0.55, 0)
+mesh = SubResource("CylinderMesh_trunk")
+
+[node name="Branch1" type="MeshInstance3D" parent="VisualMesh"]
+transform = Transform3D(0.707107, -0.612372, 0.353553, 0, 0.5, 0.866025, -0.707107, -0.612372, 0.353553, -1.2, 0.8, 0.6)
+mesh = SubResource("CylinderMesh_branch")
+
+[node name="Branch2" type="MeshInstance3D" parent="VisualMesh"]
+transform = Transform3D(0.866025, 0.353553, -0.353553, 0, 0.707107, 0.707107, 0.5, -0.612372, 0.612372, 1.4, 0.7, -0.5)
+mesh = SubResource("CylinderMesh_branch")
+
+[node name="MossPatch" type="MeshInstance3D" parent="VisualMesh"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.1, 0)
+mesh = SubResource("BoxMesh_moss")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D"]
+shape = SubResource("BoxShape3D_coll")
+
+[node name="HpLabel" type="Label3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.4, 0)
+pixel_size = 0.0075
+billboard = 1
+double_sided = false
+text = "Поваленный сук: 120/120 HP"
+font_size = 32
+outline_size = 6
+outline_color = Color(0, 0, 0, 0.85)

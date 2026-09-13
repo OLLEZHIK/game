@@ -1,0 +1,8 @@
+[gd_resource type="StandardMaterial3D" format=3 uid="uid://m_shroom_stem01"]
+
+[resource]
+resource_name = "MatMushroomStem"
+albedo_color = Color(0.92, 0.88, 0.80, 1)
+roughness = 0.7
+subsurf_scatter_enabled = true
+subsurf_scatter_strength = 0.4

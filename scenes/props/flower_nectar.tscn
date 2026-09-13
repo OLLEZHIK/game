@@ -1,0 +1,56 @@
+[gd_scene load_steps=7 format=3 uid="uid://b_nectar_fl01"]
+
+[ext_resource type="Material" uid="uid://m_grass01" path="res://assets/materials/mat_grass.tres" id="1_mstem"]
+[ext_resource type="Material" uid="uid://m_nectar01" path="res://assets/materials/mat_nectar.tres" id="2_mnectar"]
+[ext_resource type="Material" uid="uid://m_shroom_cap01" path="res://assets/materials/mat_mushroom_cap.tres" id="3_mpetal"]
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_stem"]
+material = ExtResource("1_mstem")
+top_radius = 0.12
+bottom_radius = 0.2
+height = 2.2
+radial_segments = 8
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_petals"]
+material = ExtResource("3_mpetal")
+top_radius = 1.4
+bottom_radius = 0.3
+height = 0.4
+radial_segments = 12
+
+[sub_resource type="SphereMesh" id="SphereMesh_nectar"]
+material = ExtResource("2_mnectar")
+radius = 0.55
+height = 0.45
+radial_segments = 12
+rings = 6
+
+[node name="FlowerNectar" type="Node3D"]
+
+[node name="Stem" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.1, 0)
+mesh = SubResource("CylinderMesh_stem")
+
+[node name="Petals" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.1, 0)
+mesh = SubResource("CylinderMesh_petals")
+
+[node name="NectarCore" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.3, 0)
+mesh = SubResource("SphereMesh_nectar")
+
+[node name="OmniLight3D" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.5, 0)
+light_color = Color(1, 0.85, 0.25, 1)
+light_energy = 1.2
+omni_range = 3.5
+
+[node name="Label3D" type="Label3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.2, 0)
+pixel_size = 0.007
+billboard = 1
+text = "Источник Нектара"
+font_size = 28
+outline_size = 6
+outline_color = Color(0, 0, 0, 0.85)
+modulate = Color(1, 0.9, 0.3, 1)

@@ -1,0 +1,9 @@
+[gd_resource type="StandardMaterial3D" format=3 uid="uid://m_bark01"]
+
+[resource]
+resource_name = "MatBark"
+albedo_color = Color(0.38, 0.24, 0.15, 1)
+roughness = 0.88
+rim_enabled = true
+rim = 0.15
+rim_tint = 0.4

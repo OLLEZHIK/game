@@ -1,0 +1,16 @@
+[gd_scene load_steps=2 format=3 uid="uid://b8cam1q8rts01"]
+
+[ext_resource type="Script" path="res://scripts/camera/rts_camera.gd" id="1_cam01"]
+
+[node name="RTSCamera" type="Node3D"]
+script = ExtResource("1_cam01")
+
+[node name="Elevation" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.642788, 0.766044, 0, -0.766044, 0.642788, 0, 0, 0)
+
+[node name="Camera3D" type="Camera3D" parent="Elevation"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 16)
+fov = 42.0
+size = 20.0
+near = 0.5
+far = 160.0

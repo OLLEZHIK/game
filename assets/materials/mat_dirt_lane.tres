@@ -1,0 +1,8 @@
+[gd_resource type="StandardMaterial3D" format=3 uid="uid://m_dirt01"]
+
+[resource]
+resource_name = "MatDirtLane"
+albedo_color = Color(0.42, 0.31, 0.20, 1)
+roughness = 0.85
+rim_enabled = true
+rim = 0.1

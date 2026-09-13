@@ -1,0 +1,66 @@
+[gd_scene load_steps=7 format=3 uid="uid://u_ant_worker01"]
+
+[ext_resource type="Script" path="res://scripts/units/bug_unit.gd" id="1_uhead"]
+[ext_resource type="Material" uid="uid://m_ant_chitin01" path="res://assets/materials/mat_ant_chitin.tres" id="2_mchitin"]
+
+[sub_resource type="SphereMesh" id="SphereMesh_head"]
+material = ExtResource("2_mchitin")
+radius = 0.22
+height = 0.38
+radial_segments = 10
+rings = 6
+
+[sub_resource type="SphereMesh" id="SphereMesh_thorax"]
+material = ExtResource("2_mchitin")
+radius = 0.25
+height = 0.5
+radial_segments = 10
+rings = 6
+
+[sub_resource type="SphereMesh" id="SphereMesh_abdomen"]
+material = ExtResource("2_mchitin")
+radius = 0.38
+height = 0.72
+radial_segments = 12
+rings = 8
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_unit"]
+radius = 0.65
+
+[node name="WorkerAnt" type="CharacterBody3D"]
+script = ExtResource("1_uhead")
+unit_name = "Муравей-Рабочий"
+role = 0
+max_health = 65.0
+move_speed = 3.8
+
+[node name="Visuals" type="Node3D" parent="."]
+
+[node name="BodyMesh" type="Node3D" parent="Visuals"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.35, 0)
+
+[node name="Head" type="MeshInstance3D" parent="Visuals/BodyMesh"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.1, -0.45)
+mesh = SubResource("SphereMesh_head")
+
+[node name="Thorax" type="MeshInstance3D" parent="Visuals/BodyMesh"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.05, -0.08)
+mesh = SubResource("SphereMesh_thorax")
+
+[node name="Abdomen" type="MeshInstance3D" parent="Visuals/BodyMesh"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.1, 0.45)
+mesh = SubResource("SphereMesh_abdomen")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.45, 0)
+shape = SubResource("SphereShape3D_unit")
+
+[node name="HpLabel" type="Label3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.35, 0)
+pixel_size = 0.0075
+billboard = 1
+double_sided = false
+text = "Муравей [65/65]"
+font_size = 26
+outline_size = 5
+outline_color = Color(0, 0, 0, 0.9)

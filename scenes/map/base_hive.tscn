@@ -1,0 +1,56 @@
+[gd_scene load_steps=8 format=3 uid="uid://b_hive_base01"]
+
+[ext_resource type="Script" path="res://scripts/map/base_hive.gd" id="1_bhive"]
+[ext_resource type="Material" uid="uid://m_anthill01" path="res://assets/materials/mat_anthill.tres" id="2_manth"]
+[ext_resource type="Material" uid="uid://m_bark01" path="res://assets/materials/mat_bark.tres" id="3_minner"]
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_mound"]
+material = ExtResource("2_manth")
+top_radius = 1.8
+bottom_radius = 4.2
+height = 3.2
+radial_segments = 16
+
+[sub_resource type="SphereMesh" id="SphereMesh_tunnel"]
+material = ExtResource("3_minner")
+radius = 1.2
+height = 1.2
+radial_segments = 12
+rings = 6
+
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_base"]
+height = 3.5
+radius = 4.2
+
+[node name="BaseHive" type="Node3D"]
+script = ExtResource("1_bhive")
+
+[node name="Mound" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.6, 0)
+mesh = SubResource("CylinderMesh_mound")
+
+[node name="TunnelEntrance" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, 2.2)
+mesh = SubResource("SphereMesh_tunnel")
+
+[node name="OmniLight3D" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.2, 2.0)
+light_color = Color(0.3, 1, 0.4, 1)
+light_energy = 2.5
+omni_range = 6.0
+
+[node name="StaticBody3D" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.6, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D"]
+shape = SubResource("CylinderShape3D_base")
+
+[node name="Label3D" type="Label3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.2, 0)
+pixel_size = 0.008
+billboard = 1
+text = "Улей Муравьев
+1000 / 1000 HP"
+font_size = 32
+outline_size = 6
+outline_color = Color(0, 0, 0, 0.9)

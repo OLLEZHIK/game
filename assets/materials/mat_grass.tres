@@ -1,0 +1,10 @@
+[gd_resource type="StandardMaterial3D" format=3 uid="uid://m_grass01"]
+
+[resource]
+resource_name = "MatGrass"
+albedo_color = Color(0.24, 0.58, 0.16, 1)
+roughness = 0.65
+emission_enabled = true
+emission = Color(0.05, 0.12, 0.03, 1)
+backlight_enabled = true
+backlight = Color(0.3, 0.5, 0.2, 1)
