@@ -13,12 +13,12 @@
 
 [sub_resource type="PlaneMesh" id="PlaneMesh_ground"]
 material = ExtResource("3_msoil")
-size = Vector2(72, 44)
-subdivide_width = 12
-subdivide_depth = 8
+size = Vector2(140, 90)
+subdivide_width = 16
+subdivide_depth = 12
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_ground"]
-size = Vector3(75, 2, 48)
+size = Vector3(140, 2, 90)
 
 [sub_resource type="Curve3D" id="Curve3D_top"]
 _data = {
@@ -43,7 +43,7 @@ point_count = 3
 
 [sub_resource type="BoxMesh" id="BoxMesh_dirt_lane"]
 material = ExtResource("4_mdirt")
-size = Vector3(36, 0.04, 3.4)
+size = Vector3(29, 0.04, 3.4)
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_forest"]
 sky_top_color = Color(0.42, 0.68, 0.90, 1)

@@ -313,7 +313,7 @@ anchor_right = 1.0
 offset_left = -330.0
 offset_top = 58.0
 offset_right = -15.0
-offset_bottom = 220.0
+offset_bottom = 244.0
 grow_horizontal = 0
 mouse_filter = 2
 
@@ -359,3 +359,8 @@ text = "• Пробел — распил центрального бревна"
 layout_mode = 2
 theme_override_font_sizes/font_size = 12
 text = "• F / Клик по жуку — вид от лица (Bug-Cam)"
+
+[node name="Guide6" type="Label" parent="UI/ControlGuide/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "• Q / E — поворот камеры (до 15°)"
